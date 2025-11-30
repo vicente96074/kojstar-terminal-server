@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CAPITALIZACIÓN DE INTERESÉS</title>
+    <style>
+        body{
+            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+        }
+
+        .body{
+            padding: 20px;
+        }
+
+        p{
+            text-align: center;
+        }
+
+        .title{
+            text-align: center;
+            font-size: 45px;
+            font-weight: 900;
+            color: #0a7518;
+            text-shadow: 5px 5px #558ABB;
+            margin-top: -50px;
+        }
+
+        .text-justify{
+
+            text-align: justify;
+        }
+
+        .logo{
+            width: 250px;
+            height: 265px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table{
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead th{
+            background-color: rgb(10, 117, 24);
+            color: rgb(255, 255, 255);
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
+
+        tr td{
+            border: 1px solid #000;
+            padding: 6px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="head">
+            <img src="cid:logoImage" alt="Logo" class="d-flex justify-content-center logo">
+            <p class="title">Cosanvi, R.L.</p>
+        </div>
+        <div class="body">
+            <div class="text-justify">
+                Estimado(a) usuario de <span th:text="${branch}">branch</span>:
+            </div>
+            <p class="text-justify">
+                Nos permitimos informarle que el día de hoy
+                <span th:text="${date}"></span>
+                las cuentas de los asociados que ya cumplieron con el plazo de capitalización de intereses,
+                fueron capitalizadas.
+            </p>
+            <p class="text-justify">
+                A continuación, se detallan los asociados que fueron capitalizados:
+            </p>
+            <table class="custom-table">
+                <thead class="th">
+                    <tr>
+                        <th scope="col">N°</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Cuenta</th>
+                        <th scope="col" title="Monto capitalizado">Monto cap.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="account, iterStat : ${accounts}">
+                        <td th:text="${iterStat.count}"></td>
+                        <td th:text="${account.associateName}"></td>
+                        <td th:text="${account.accountNumber}"></td>
+                        <td th:text="${account.amountInterest}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="text-justify mt-3">
+                Agradecemos su comprensión y colaboración, en avisar a los asociados que fueron capitalizados sus intereses.
+            </p>
+
+            <p class="text-justify mt-3">
+                Atentamente, <br> El equipo de Cosanvi, R.L.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
