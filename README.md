@@ -37,10 +37,13 @@ export KOJSTAR_TERMINAL_JWT_EXPIRATION="your_jwt_expiration_time"
 export KOJSTAR_TERMINAL_SETTINGS_JSON_FILE_PATH="your_settings_json_file_path"
 export KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER="your_oauth2_host_issuer"
 
-KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS="http://localhost:4200,https://192.168.1.233:4200,https://your_domai.com,https://www.your_domain.com" # On production, use the your_domain.com
-KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS="GET,POST,PUT,DELETE,OPTIONS" # Allowed methods
-KOJSTAR_TERMINAL_CORS_ALLOWED_HEADERS="x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, X-Device-User-Agent, X-Device-IP" # Allowed headers
-KOJSTAR_TERMINAL_CORS_MAX_AGE="3600" # 1 hour
+export KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS="http://localhost:4200,https://192.168.1.233:4200,https://your_domai.com,https://www.your_domain.com" # On production, use the your_domain.com
+export KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS="GET,POST,PUT,DELETE,OPTIONS" # Allowed methods
+export KOJSTAR_TERMINAL_CORS_ALLOWED_HEADERS="x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, X-Device-User-Agent, X-Device-IP" # Allowed headers
+export KOJSTAR_TERMINAL_CORS_MAX_AGE="3600" # 1 hour
+
+export KOJSTAR_TERMINAL_VAULT_ROLE_ID="your_vault_role_id"
+export KOJSTAR_TERMINAL_VAULT_SECRET_ID="your_secret_id"
 ```
 
 - Save the file and exit the text editor.
@@ -109,6 +112,7 @@ sudo journalctl -u kt-user-service -f
 ```
 
 # 🚀 GUÍA DE CONFIGURACIÓN DE HASHICORP VAULT 🛠️
+# vault -version "Vault v1.21.1 (2453aac2638a6ae243341b4e0657fd8aea1cbf18), built 2025-11-18T13:04:32Z"
 
 # ----------------------------------------------------------------------
 # PASO 1: LIMPIEZA TOTAL Y PREPARACIÓN DEL SISTEMA
@@ -131,6 +135,7 @@ sudo rm -f /etc/vault.d/vault-init.txt
 sudo rm -rf /var/lib/vault
 sudo rm -f /usr/share/keyrings/hashicorp-archive-keyring.gpg
 sudo rm -f /etc/apt/sources.list.d/hashicorp.list
+sudo rm -f /etc/kojstar-terminal/vault-rotate-secret.sh
 
 # 3. Instalar dependencias esenciales y recargar systemd
 sudo apt update && sudo apt install -y curl gpg
@@ -312,9 +317,9 @@ vault auth enable approle
 
 # Crear el rol de la aplicación
 vault write auth/approle/role/mysql-app-role \
-    token_ttl=1h \
-    token_max_ttl=4h \
-    secret_id_ttl=15m \
+    token_ttl=720h \
+    token_max_ttl=720h \
+    secret_id_ttl=24h \
     policies="mysql-transit-app" \
     bind_secret_id=true
 ```
@@ -367,4 +372,68 @@ echo "--- 🔄 ROTACIÓN DE CLAVES COMPLETA 🔄 ---"
 # Obtener información sobre la clave (busca el campo 'latest_version')
 vault read transit/keys/mysql-app-data
 echo "--- ✅ VERIFICACIÓN DE ROTACIÓN COMPLETA ✅ ---"
+```
+
+# ----------------------------------------------------------------------
+# PASO 8: ROTACIÓN DE SECRET ID E INYECCIÓN DE ENVIRONMENT
+# ----------------------------------------------------------------------
+```bash
+# Create file /usr/local/bin/vault-rotate-secret.sh
+sudo nano /usr/local/bin/vault-rotate-secret.sh
+```
+# /usr/local/bin/vault-rotate-secret.sh content
+```bash
+#!/bin/bash
+# Ejecutar este script como un cron job cada 23 horas.
+set -e
+
+# Configuración del entorno de Vault
+VAULT_ADDR="http://127.0.0.1:8200"
+VAULT_TOKEN="<TU_ROOT_O_ADMIN_TOKEN_CON_PERMISOS>"
+ROLE_NAME="mysql-app-role"
+ENV_FILE="/etc/kojstar-terminal/kt.env"
+BASHRC_FILE="~/.bashrc"
+
+# 1. Generar nuevo Secret ID
+NEW_SECRET=$(curl -s -H "X-Vault-Token: $VAULT_TOKEN" \
+-X POST "$VAULT_ADDR/v1/auth/approle/role/$ROLE_NAME/secret-id" | \
+grep -o '"secret_id":"[^"]*' | cut -d'"' -f4)
+
+if [ -z "$NEW_SECRET" ]; then
+echo "$(date) ERROR: Fallo al generar Secret ID. Vault no disponible o token inválido." >> /var/log/vault_rotation.log
+exit 1
+fi
+
+# 2. 🚨 Actualizar el archivo kt.env con el nuevo Secret ID 🚨
+# Usamos 'sed' para reemplazar solo la línea que contiene SECRET_ID
+sudo sed -i "/SPRING_VAULT_SECRET_ID=/c\SPRING_VAULT_SECRET_ID=\"$NEW_SECRET\"" $ENV_FILE
+
+# 3. Aplicar los cambios al entorno del sistema (sin reiniciar el servicio)
+# NOTA: Esto solo funciona si tu archivo de servicio (Paso 3.2) está configurado
+# para usar 'EnvironmentFile'.
+sudo systemctl daemon-reload
+
+# 4. Notificar a systemd de un cambio en el entorno (Si es necesario)
+# En Spring Cloud Vault, si el token expira, intentará usar el último Secret ID válido.
+# Como el Secret ID dura 24 horas, no necesitamos reiniciar la aplicación.
+
+echo "$(date) INFO: Secret ID para $ROLE_NAME rotado e inyectado con éxito." >> /var/log/vault_rotation.log
+```
+
+# Paso A: Guardar y Dar Permisos
+```bash
+# 1. Guardar el script (asumiendo que lo hiciste con nano o vim)
+# 2. Dar permisos de ejecución
+sudo chmod +x /usr/local/bin/vault-rotate-secret.sh
+```
+
+# Paso B: Configurar la Tarea con crontab
+```bash
+sudo crontab -e
+```
+
+# Paso C: Añadir la Tarea Cron
+```bash
+# Ejecutar el script cada día a las 3:00 AM (y luego cada 23 horas).
+0 3 * * * /usr/local/bin/vault-rotate-secret.sh >> /var/log/cron.log 2>&1
 ```

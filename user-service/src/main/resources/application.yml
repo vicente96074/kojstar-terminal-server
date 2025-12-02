@@ -63,6 +63,18 @@ spring:
   task:
     scheduling:
       enabled: true
+  vault:
+    scheme: http
+    host: 127.0.0.1
+    port: 8200
+    authentication: approle
+    app-role:
+      role-id: 08b83bd5-c1c5-f633-ece6-ce1df41a0452
+      secret-id: f3910b6b-e988-2b10-cab2-0929f9b6fc48
+
+vault:
+  transit:
+    key-name: mysql-app-data
 
 # Custom properties
 reencryption:

@@ -68,7 +68,8 @@ public class MainSecurity {
             "/css/**",
             "/js/**",
             "/images/**",
-            "/favicon.ico"
+            "/favicon.ico",
+            "/api/vault/test"
     };
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;

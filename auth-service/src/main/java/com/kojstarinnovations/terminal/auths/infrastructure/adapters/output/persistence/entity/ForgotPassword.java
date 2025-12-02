@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.entity;
 
+import com.kojstarinnovations.terminal.auths.vault.EncryptionConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,6 +41,7 @@ public class ForgotPassword {
     private String token;
 
     @Column(name = "code")
+    @Convert(converter = EncryptionConverter.class)
     private String code;
 
     @Column(name = "issue_date")
