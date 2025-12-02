@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.entity;
 
+import com.kojstarinnovations.terminal.auths.vault.EncryptionConverter;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.shared.coverters.enums.StatusConverter;
 import jakarta.persistence.*;

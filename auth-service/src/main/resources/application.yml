@@ -58,6 +58,25 @@ spring:
     port: ${KOJSTAR_TERMINAL_SPRING_REDIS_PORT}
     timeout: 5000ms
     password: ${KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD}
+  task:
+    scheduling:
+      enabled: true
+  cloud:
+    vault:
+      scheme: http
+      host: 127.0.0.1
+      port: 8200
+      authentication: APPROLE
+      app-role:
+        role-id: ${KOJSTAR_TERMINAL_VAULT_ROLE_ID}
+        secret-id: ${KOJSTAR_TERMINAL_VAULT_SECRET_ID}
+        app-role-path: approle
+      connection-timeout: 15000
+      fail-fast: true
+
+vault:
+  transit:
+    key-name: mysql-app-data
 
 # JWT secret and expiration
 jwt:
@@ -67,4 +86,4 @@ jwt:
 # Logging configuration
 logging:
   level:
-    root: INFO
+    root: DEBUG
