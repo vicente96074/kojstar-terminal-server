@@ -86,4 +86,4 @@ jwt:
 # Logging configuration
 logging:
   level:
-    root: DEBUG
+    root: INFO
