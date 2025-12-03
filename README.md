@@ -406,7 +406,7 @@ fi
 
 # 2. 🚨 Actualizar el archivo kt.env con el nuevo Secret ID 🚨
 # Usamos 'sed' para reemplazar solo la línea que contiene SECRET_ID
-sudo sed -i "/SPRING_VAULT_SECRET_ID=/c\SPRING_VAULT_SECRET_ID=\"$NEW_SECRET\"" $ENV_FILE
+sudo sed -i "/KOJSTAR_TERMINAL_VAULT_SECRET_ID=/c\KOJSTAR_TERMINAL_VAULT_SECRET_ID=\"$NEW_SECRET\"" $ENV_FILE
 
 # 3. Aplicar los cambios al entorno del sistema (sin reiniciar el servicio)
 # NOTA: Esto solo funciona si tu archivo de servicio (Paso 3.2) está configurado
@@ -436,4 +436,5 @@ sudo crontab -e
 ```bash
 # Ejecutar el script cada día a las 3:00 AM (y luego cada 23 horas).
 0 3 * * * /usr/local/bin/vault-rotate-secret.sh >> /var/log/cron.log 2>&1
+# */5 * * * * /usr/local/bin/vault-rotate-secret.sh >> /var/log/cron.log 2>&1
 ```

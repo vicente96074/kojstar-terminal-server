@@ -1,8 +1,10 @@
 package com.kojstarinnovations.terminal.auths.infrastructure.adapters.input.controller;
 
+import com.kojstarinnovations.terminal.auths.vault.DataRewrapJob;
 import com.kojstarinnovations.terminal.auths.vault.VaultEncryptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,4 +59,15 @@ public class VaultTestController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(value = "/rewrap", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> rewrapVault() {
+        dataRewrapJob.rewrapAllEncryptedData();
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Success");
+        return ResponseEntity.ok(response);
+    }
+
+
+    private final DataRewrapJob dataRewrapJob;
 }

@@ -2,13 +2,13 @@ package com.kojstarinnovations.terminal.auths.vault;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
  * Conversor JPA que cifra/descifra automáticamente los campos de la base de datos
- *
+ * <p>
  * Uso en entidades:
+ *
  * @Convert(converter = EncryptionConverter.class)
  * private String campoSensible;
  */
@@ -16,11 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class EncryptionConverter implements AttributeConverter<String, String> {
 
-    private static VaultEncryptionService encryptionService;
-
-    @Autowired
-    public void setEncryptionService(VaultEncryptionService service) {
-        EncryptionConverter.encryptionService = service;
+    private VaultEncryptionService getService() {
+        // Llama estáticamente a la referencia del contexto para obtener el bean
+        return SpringContext.getBean(VaultEncryptionService.class);
     }
 
     /**
@@ -38,7 +36,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
             return attribute;
         }
 
-        return encryptionService.encrypt(attribute);
+        return getService().encrypt(attribute);
     }
 
     /**
@@ -56,6 +54,6 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
             return dbData;
         }
 
-        return encryptionService.decrypt(dbData);
+        return getService().decrypt(dbData);
     }
 }

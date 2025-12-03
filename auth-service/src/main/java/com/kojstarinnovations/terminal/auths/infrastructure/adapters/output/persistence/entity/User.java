@@ -30,6 +30,7 @@ public class User {
     private String firstName;
 
     @Column(name = "first_surname")
+    @Convert(converter = EncryptionConverter.class)
     private String firstSurname;
 
     @Column(unique = true, nullable = false)

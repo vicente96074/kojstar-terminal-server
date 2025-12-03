@@ -44,12 +44,10 @@ public class VaultEncryptionService {
             Plaintext plaintextObj = Plaintext.of(base64);
 
             // Cifrar usando Vault
-            String ciphertext = vaultTemplate
+            return vaultTemplate
                     .opsForTransit(TRANSIT_PATH)
                     .encrypt(TRANSIT_KEY_NAME, plaintextObj)
                     .getCiphertext();
-
-            return ciphertext;
 
         } catch (Exception e) {
             throw new RuntimeException("Error al cifrar datos con Vault", e);
@@ -105,12 +103,7 @@ public class VaultEncryptionService {
         try {
             // Descifrar con la versión antigua
             String decrypted = decrypt(ciphertext);
-
-            // Re-cifrar con la versión nueva
-            String rewrapped = encrypt(decrypted);
-
-            return rewrapped;
-
+            return encrypt(decrypted);
         } catch (Exception e) {
             throw new RuntimeException("Error al re-cifrar datos con Vault", e);
         }
