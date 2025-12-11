@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AddressUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.AddressUSResponse;
@@ -43,12 +43,9 @@ public class AddressUSService implements AddressUSUC {
 
         AddressUSDTO dto = domainMapper.requestToDTO(request);
         dto.setId(null);
-        dto = outputPort.save(dto);
         dto.setStatus(Status.ACTIVE);
 
-        log.info("An address was saved for users and the ID was obtained: {}", dto.getId());
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.save(dto);
     }
 
     /**
@@ -81,13 +78,8 @@ public class AddressUSService implements AddressUSUC {
      */
     @Override
     public AddressUSResponse getById(String id) {
-        AddressUSResponse response = outputPort.getById(id)
-                .map(domainMapper::dtoToResponse)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.NOT_FOUND_ADDRESS_US));
-
-        log.info("An address was retrieved for users and the ID was retrieved: {}", id);
-
-        return response;
+        return outputPort.getById(id)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ADDRESS_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -98,14 +90,9 @@ public class AddressUSService implements AddressUSUC {
      */
     @Override
     public Page<AddressUSResponse> getPage(Pageable pageable) {
-        Page<AddressUSResponse> responses = Optional.of(outputPort.getPage(pageable))
+        return Optional.of(outputPort.getPage(pageable))
                 .filter(page -> !page.isEmpty())
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.NOT_FOUND_PAGE_ADDRESS_US))
-                .map(domainMapper::dtoToResponse);
-
-        log.info("A page of addresses was retrieved for users with pageable: {}", pageable);
-
-        return responses;
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ADDRESS_PAGE_NOT_FOUND));
     }
 
     /**
@@ -115,16 +102,9 @@ public class AddressUSService implements AddressUSUC {
      */
     @Override
     public List<AddressUSResponse> getAll() {
-        List<AddressUSResponse> responses = Optional.of(outputPort.getAll())
+        return Optional.of(outputPort.getAll())
                 .filter(list -> !list.isEmpty())
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.LIST_ADDRESS_US_EMPTY))
-                .stream()
-                .map(domainMapper::dtoToResponse)
-                .toList();
-
-        log.info("All addresses were retrieved for users.");
-
-        return responses;
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ADDRESS_LIST_EMPTY));
     }
 
     /**
@@ -138,11 +118,7 @@ public class AddressUSService implements AddressUSUC {
     public AddressUSResponse updateById(AddressUSRequest request, String id) {
         AddressUSDTO dto = domainMapper.requestToDTO(request);
         dto.setId(id);
-        dto = outputPort.updateById(dto, id);
-
-        log.info("An address was updated for users and the ID was updated: {}", dto.getId());
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.updateById(dto, id);
     }
 
     private final AddressUSOP outputPort;

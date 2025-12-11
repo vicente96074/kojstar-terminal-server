@@ -34,7 +34,7 @@ public class IdentificationRequest extends CommonsRequest {
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.IDENTIFICATION_TYPE_REQUIRED)
-    private String identificationType = IdentificationType.DPI.name();
+    private String identificationType; // = IdentificationType.DPI.name();
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.FULL_NAME_REQUIRED)
@@ -44,10 +44,10 @@ public class IdentificationRequest extends CommonsRequest {
     private LocalDate birthDate;
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
-    private String gender = Gender.OTHER.name();
+    private String gender; // = Gender.OTHER.name();
 
     @DataRequired(message = ValidationConstants.NATIONALITY_REQUIRED)
-    private String nationalityCode = CountryCodeISO.GT.getCode();
+    private String nationalityCode; // = CountryCodeISO.GT.getCode();
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate issueDate;
@@ -56,7 +56,7 @@ public class IdentificationRequest extends CommonsRequest {
     private LocalDate expirationDate;
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
-    private String issuingAuthority = IssuingAuthority.RENAP.getCode();
+    private String issuingAuthority; // = IssuingAuthority.RENAP.getCode();
 
     //
     private String imageUrl;

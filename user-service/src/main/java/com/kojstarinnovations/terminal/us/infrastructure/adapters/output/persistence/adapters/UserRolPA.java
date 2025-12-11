@@ -1,5 +1,7 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserRolResponse;
 import com.kojstarinnovations.terminal.us.domain.model.UserRolDTO;
 import com.kojstarinnovations.terminal.us.domain.model.UserRolIDDTO;
 import com.kojstarinnovations.terminal.us.domain.opextends.UserRolOP;
@@ -46,10 +48,10 @@ public class UserRolPA implements UserRolOP {
      * @return the saved model
      */
     @Override
-    public UserRolDTO save(UserRolDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public UserRolResponse save(UserRolDTO dto) {
+        return mapper.entityToResponse(
                 repository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -61,14 +63,14 @@ public class UserRolPA implements UserRolOP {
      * @return the modelDto retrieved
      */
     @Override
-    public Optional<UserRolDTO> getById(UserRolIDDTO id) {
+    public Optional<UserRolResponse> getById(UserRolIDDTO id) {
         return repository.findById(
                         UserRolId.builder()
                                 .rolId(id.getRolId())
                                 .userId(id.getUserId())
                                 .build()
                 )
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -78,9 +80,9 @@ public class UserRolPA implements UserRolOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<UserRolDTO> getPage(Pageable pageable) {
+    public Page<UserRolResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -89,10 +91,10 @@ public class UserRolPA implements UserRolOP {
      * @return List<DTO>
      */
     @Override
-    public List<UserRolDTO> getAll() {
+    public List<UserRolResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTO)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -104,8 +106,8 @@ public class UserRolPA implements UserRolOP {
      * @return the updated modelDto
      */
     @Override
-    public UserRolDTO updateById(UserRolDTO dto, UserRolIDDTO id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public UserRolResponse updateById(UserRolDTO dto, UserRolIDDTO id) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -115,7 +117,7 @@ public class UserRolPA implements UserRolOP {
      */
     @Override
     public void deleteById(UserRolIDDTO id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -128,6 +130,6 @@ public class UserRolPA implements UserRolOP {
         repository.deleteByUserId(userId);
     }
 
-    private final UserRolPM persistenceMapper;
+    private final UserRolPM mapper;
     private final UserRolRepository repository;
 }

@@ -4,12 +4,12 @@ import com.kojstarinnovations.terminal.commons.data.dto.userservice.TwoFactorUse
 import com.kojstarinnovations.terminal.commons.data.enums.TwoFactorType;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.TwoFactorUserResponse;
-import com.kojstarinnovations.terminal.shared.ports.output.OP;
+import com.kojstarinnovations.terminal.shared.ports.output.OutputPort;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TwoFactorUserOP extends OP<TwoFactorUserDTO, TwoFactorUserResponse, String> {
+public interface TwoFactorUserOP extends OutputPort<TwoFactorUserDTO, TwoFactorUserResponse, String> {
 
     /**
      * Get the two-factor app secret by user id
@@ -55,15 +55,6 @@ public interface TwoFactorUserOP extends OP<TwoFactorUserDTO, TwoFactorUserRespo
      * @return true if the user has any phone number registered, false otherwise
      */
     boolean existsPhoneBySub(String sub);
-
-    /**
-     * Check if the phone number already exists by sub
-     *
-     * @param sub             the id of the user
-     * @param fullPhoneNumber the full phone number to check
-     * @return true if the phone number already exists, false otherwise
-     */
-    boolean matchPhoneBySub(String sub, String fullPhoneNumber, CountryCodeISO codeISO);
 
     /**
      * Check if an email already exists by sub

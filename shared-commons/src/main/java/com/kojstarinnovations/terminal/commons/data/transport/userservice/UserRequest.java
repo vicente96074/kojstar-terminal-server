@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -29,6 +30,6 @@ public class UserRequest {
     private String storeId;
     private String phone;
     private String userSettingId;
-    private Set<String> rolesRequest = new HashSet<>();
-    private Set<String> accessesRequest = new HashSet<>();
+    private List<String> rolesRequest;
+    private List<String> accessesRequest;
 }

@@ -3,7 +3,6 @@ package com.kojstarinnovations.terminal.auths.infrastructure.adapters.input.cont
 import com.kojstarinnovations.terminal.auths.vault.DataRewrapJob;
 import com.kojstarinnovations.terminal.auths.vault.VaultEncryptionService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

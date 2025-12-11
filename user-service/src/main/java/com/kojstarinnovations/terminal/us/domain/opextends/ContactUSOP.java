@@ -4,7 +4,7 @@ import com.kojstarinnovations.terminal.commons.data.dto.userservice.ContactUSDTO
 import com.kojstarinnovations.terminal.commons.data.enums.ContactType;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.ContactUSResponse;
-import com.kojstarinnovations.terminal.shared.ports.output.OP;
+import com.kojstarinnovations.terminal.shared.ports.output.OutputPort;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
-public interface ContactUSOP extends OP<ContactUSDTO, ContactUSResponse, String> {
+public interface ContactUSOP extends OutputPort<ContactUSDTO, ContactUSResponse, String> {
 
     /**
      * Method to check if a phone number exists for a given contact type
@@ -72,11 +72,4 @@ public interface ContactUSOP extends OP<ContactUSDTO, ContactUSResponse, String>
      */
     boolean existsEmailBySub(String email, String sub);
 
-    /**
-     * Validate if any phone number already exists by sub
-     *
-     * @param sub the sub of the user
-     * @return true if any phone number exists, false otherwise
-     */
-    boolean existsPhoneBySub(String sub);
 }

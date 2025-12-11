@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
 public class UserDTO extends BasicAuditDTO {
     private String id;
     private String transactionId;

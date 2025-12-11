@@ -2,6 +2,7 @@ package com.kojstarinnovations.terminal.us.domain.opextends;
 
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AccessDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.AccessName;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.AccessResponse;
 import com.kojstarinnovations.terminal.shared.ports.output.OutputPort;
 
 import java.util.Optional;
@@ -11,7 +12,7 @@ import java.util.Optional;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
-public interface AccessOP extends OutputPort<AccessDTO, String> {
+public interface AccessOP extends OutputPort<AccessDTO, AccessResponse, String> {
 
     /**
      * Get Access by Access Name
@@ -19,7 +20,7 @@ public interface AccessOP extends OutputPort<AccessDTO, String> {
      * @param accessName Access Name
      * @return Access DTO
      */
-    Optional<AccessDTO> getByAccessName(AccessName accessName);
+    Optional<AccessResponse> getByAccessName(AccessName accessName);
 
     /**
      * Check if Access exists by Access Name

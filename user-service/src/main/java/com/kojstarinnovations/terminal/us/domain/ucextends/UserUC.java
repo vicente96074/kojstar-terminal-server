@@ -36,15 +36,7 @@ public interface UserUC extends UseCase<UserRequest, UserResponse, String> {
      * @param pageable the page to search
      * @return page of user response
      */
-    Page<UserResponse> getPageUserActive(Pageable pageable);
-
-    /**
-     * Get user by ID
-     *
-     * @param userId the user ID
-     * @return UserResponse the user response
-     */
-    UserResponse getUserById(String userId);
+    Page<UserResponse> getActiveStatusPage(Pageable pageable);
 
     /**
      * Block user

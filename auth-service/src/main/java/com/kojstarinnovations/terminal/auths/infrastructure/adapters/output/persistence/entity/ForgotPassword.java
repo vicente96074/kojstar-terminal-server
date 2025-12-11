@@ -25,9 +25,6 @@ public class ForgotPassword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "transaction_id")
-    private String transactionId;
-
     @Column(name = "email")
     private String email;
 

@@ -1,7 +1,7 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.RefreshTokenData;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.TwoFactorCode;
 import com.kojstarinnovations.terminal.commons.exception.CriticalSecurityException;
@@ -101,7 +101,7 @@ public class RefreshTokenService {
         String tokenKey = PREFIX_REFRESH_TOKEN + tokenId;
         String jsonValue = redisTemplate.opsForValue().get(tokenKey);
         if (jsonValue == null) {
-            throw new CriticalSecurityException(ExceptionConstants.TOKEN_NOT_FOUND);
+            throw new CriticalSecurityException(I18nUserConstants.EXCEPTION_RT_TOKEN_NOT_FOUND);
         }
         return objectMapper.readValue(jsonValue, RefreshTokenData.class);
     }
@@ -122,12 +122,12 @@ public class RefreshTokenService {
         }
 
         tries = getTriesBySub(sub);
-        // Si el número de intentos supera el máximo se guarda el ip como sospechoso
+        // If the number of attempts exceeds the maximum, the IP address is saved as suspicious.
         if (tries != null && tries >= MAX_ATTEMPTS_BY_TWO_FACTOR) {
             addSuspiciousIp(sub, ip);
-            // se bloquea el acceso al usuario
+            // User access is blocked
             this.userService.blockUser(sub);
-            throw new CriticalSecurityException(ExceptionConstants.SEVERAL_FAILED_TWO_FACTOR_ATTEMPTS);
+            throw new CriticalSecurityException(I18nUserConstants.EXCEPTION_RT_SEVERAL_FAILED_TWO_FACTOR_ATTEMPTS);
         }
     }
 
@@ -146,7 +146,7 @@ public class RefreshTokenService {
             addSuspiciousUserAgent(sub, userAgent);
             // se bloquea el acceso al usuario
             this.userService.blockUser(sub);
-            throw new CriticalSecurityException(ExceptionConstants.SEVERAL_FAILED_TWO_FACTOR_ATTEMPTS);
+            throw new CriticalSecurityException(I18nUserConstants.EXCEPTION_RT_SEVERAL_FAILED_TWO_FACTOR_ATTEMPTS);
         }
     }
 
@@ -224,7 +224,7 @@ public class RefreshTokenService {
 
             // se bloquea el acceso al usuario
             this.userService.blockUser(sub);
-            throw new CriticalSecurityException(ExceptionConstants.SEVERAL_FAILED_TWO_FACTOR_ATTEMPTS);
+            throw new CriticalSecurityException(I18nUserConstants.EXCEPTION_RT_SEVERAL_FAILED_TWO_FACTOR_ATTEMPTS);
         }
     }
 

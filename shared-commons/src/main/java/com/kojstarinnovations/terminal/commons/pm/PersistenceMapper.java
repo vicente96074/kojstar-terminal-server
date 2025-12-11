@@ -10,7 +10,7 @@ import org.mapstruct.Mapper;
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
 @Mapper
-public interface PersistenceMapper<ENTITY, DTO> {
+public interface PersistenceMapper<ENTITY, DTO, RESPONSE> {
 
     /**
      * Maps a dto object to an entity object
@@ -27,4 +27,12 @@ public interface PersistenceMapper<ENTITY, DTO> {
      * @return the mapped dto object
      */
     DTO entityToDTO(ENTITY entity);
+
+    /**
+     * Maps an entity to response
+     *
+     * @param entity persisted
+     * @return payload
+     */
+    RESPONSE entityToResponse(ENTITY entity);
 }

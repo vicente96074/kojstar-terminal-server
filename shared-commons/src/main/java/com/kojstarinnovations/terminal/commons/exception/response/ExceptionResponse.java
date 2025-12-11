@@ -17,8 +17,7 @@ import java.time.LocalDateTime;
 public record ExceptionResponse(
         LocalDateTime date,
         ExceptionType type,
-        String details,
-        String service
+        String details
 ) {
 
 }

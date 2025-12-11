@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.entity;
 
+import com.kojstarinnovations.terminal.auths.vault.EncryptionConverter;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.shared.entity.TwoFactor;
 import jakarta.persistence.*;
@@ -20,6 +21,10 @@ public class TwoFactorUser extends TwoFactor {
 
     @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "two_factor_phone")
+    @Convert(converter = EncryptionConverter.class)
+    private String twoFactorPhone; // SMS
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", insertable = false, updatable = false)

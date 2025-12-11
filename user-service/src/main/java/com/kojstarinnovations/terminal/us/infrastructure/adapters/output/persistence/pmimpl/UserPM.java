@@ -1,8 +1,8 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl;
 
-import com.kojstarinnovations.terminal.commons.data.dto.userservice.AccessDTO;
-import com.kojstarinnovations.terminal.commons.data.dto.userservice.RolDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.UserDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.AccessResponse;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.RolResponse;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class UserPM implements PersistenceMapper<User, UserDTO> {
+public class UserPM implements PersistenceMapper<User, UserDTO, UserResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -47,31 +47,32 @@ public class UserPM implements PersistenceMapper<User, UserDTO> {
      * @param entity the entity to be mapped
      * @return the mapped dto object
      */
-    public UserDTO entityToDTOWithAccessAndRoles(User entity) {
-        UserDTO dto = modelMapper.map(entity, UserDTO.class);
+    public UserResponse entityToResponseWithAccessAndRoles(User entity) {
+        UserResponse response = modelMapper.map(entity, UserResponse.class);
 
         if (entity.getAccesses() != null && !entity.getAccesses().isEmpty()) {
-            dto.setAccessDTOs(
+            response.setAccessResponses(
                     entity.getAccesses()
                             .stream()
-                            .map(access -> modelMapper.map(access, AccessDTO.class))
+                            .map(access -> modelMapper.map(access, AccessResponse.class))
                             .toList()
             );
         }
 
         if (entity.getRoles() != null && !entity.getRoles().isEmpty()) {
-            dto.setRolDTOs(
+            response.setRolResponses(
                     entity.getRoles()
                             .stream()
-                            .map(rol -> modelMapper.map(rol, RolDTO.class))
+                            .map(rol -> modelMapper.map(rol, RolResponse.class))
                             .toList()
             );
         }
 
-        return dto;
+        return response;
     }
 
-    public UserResponse entityToUserResponse(User entity) {
+    @Override
+    public UserResponse entityToResponse(User entity) {
         return modelMapper.map(entity, UserResponse.class);
     }
 

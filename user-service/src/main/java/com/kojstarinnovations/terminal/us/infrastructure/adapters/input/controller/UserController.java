@@ -56,7 +56,7 @@ public class UserController {
     @PostMapping(value = "/get-page-user-active", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("@securityService.hasAnyRole({'SUPER_ADMIN', 'CEO', 'REGIONAL_MANAGER', 'GOOGLE_USER', 'GITHUB_USER'})")
     public ResponseEntity<PagedModel<EntityModel<UserResponse>>> getPageUserActive(@RequestBody PaginationRequest request, PagedResourcesAssembler<UserResponse> assembler) {
-        return ResponseEntity.ok(assembler.toModel(service.getPageUserActive(
+        return ResponseEntity.ok(assembler.toModel(service.getActiveStatusPage(
                 PageRequest.of(
                         request.getPage(),
                         request.getSize(),

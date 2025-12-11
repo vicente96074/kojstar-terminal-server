@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.dmimpl;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AddressUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.RegionCodeISO;
@@ -33,17 +33,17 @@ public class AddressUSDM implements DomainMapper<AddressUSDTO, AddressUSRequest,
         AddressUSDTO dto = modelMapper.map(request, AddressUSDTO.class);
         CountryCodeISO.fromCode(request.getCountryCode())
                 .ifPresentOrElse(dto::setCountryCodeISO, () -> {
-                    throw new NotFoundException(ExceptionConstants.COUNTRY_CODE_NOT_FOUND);
+                    throw new NotFoundException(I18nUserConstants.EXCEPTION_ADDRESS_COUNTRY_CODE_NOT_FOUND);
                 });
 
         RegionCodeISO.fromCode(request.getRegionCode())
                 .ifPresentOrElse(dto::setRegionCodeISO, () -> {
-                    throw new NotFoundException(ExceptionConstants.REGION_CODE_NOT_FOUND);
+                    throw new NotFoundException(I18nUserConstants.EXCEPTION_ADDRESS_REGION_CODE_NOT_FOUND);
                 });
 
         SubdivisionRegionCodeISO.fromCode(request.getSubdivisionRegionCode())
                 .ifPresentOrElse(dto::setSubdivisionRegionCodeISO, () -> {
-                    throw new NotFoundException(ExceptionConstants.SUBDIVISION_REGION_CODE_NOT_FOUND);
+                    throw new NotFoundException(I18nUserConstants.EXCEPTION_ADDRESS_SUBDIVISION_REGION_CODE_NOT_FOUND);
                 });
 
         return dto;

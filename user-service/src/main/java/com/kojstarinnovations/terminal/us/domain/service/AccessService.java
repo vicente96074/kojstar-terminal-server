@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AccessDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.AccessResponse;
@@ -44,17 +44,13 @@ public class AccessService implements AccessUC {
     public AccessResponse save(AccessRequest request) {
 
         if (existsByAccessName(request.getAccessName())) {
-            throw new DuplicateException(ExceptionConstants.DUPLICATE_ACCESS);
+            throw new DuplicateException(I18nUserConstants.EXCEPTION_ACCESS_DUPLICATE);
         }
 
         AccessDTO dto = domainMapper.requestToDTO(request);
         dto.setId(null);
         dto.setStatus(Status.ACTIVE);
-        dto = outputPort.save(dto);
-
-        log.info("An access was saved for users and the ID was obtained: {}", dto.getId());
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.save(dto);
     }
 
     /**
@@ -76,9 +72,8 @@ public class AccessService implements AccessUC {
      */
     @Override
     public AccessResponse getById(String id) {
-        Optional<AccessDTO> optionalAccessDTO = outputPort.getById(id);
-        log.info("An access was retrieved for users and the ID was retrieved: {}", id);
-        return domainMapper.dtoToResponse(optionalAccessDTO.orElseThrow(() -> new NotFoundException("Access not found by ID")));
+        return outputPort.getById(id)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ACCESS_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -89,11 +84,9 @@ public class AccessService implements AccessUC {
      */
     @Override
     public Page<AccessResponse> getPage(Pageable pageable) {
-        Page<AccessResponse> responses = Optional.of(outputPort.getPage(pageable)).filter(page -> !page.isEmpty()).orElseThrow(() -> new NotFoundException(ExceptionConstants.PAGE_ACCESS_NOT_FOUND)).map(domainMapper::dtoToResponse);
-
-        log.info("An access was retrieved for users and the pageable: {}", pageable);
-
-        return responses;
+        return Optional.of(outputPort.getPage(pageable))
+                .filter(page -> !page.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ACCESS_PAGE_NOT_FOUND));
     }
 
     /**
@@ -103,11 +96,9 @@ public class AccessService implements AccessUC {
      */
     @Override
     public List<AccessResponse> getAll() {
-        List<AccessResponse> responses = Optional.of(outputPort.getAll()).filter(list -> !list.isEmpty()).orElseThrow(() -> new NotFoundException(ExceptionConstants.LIST_ACCESS_NOT_FOUND)).stream().map(domainMapper::dtoToResponse).toList();
-
-        log.info("All accesses were retrieved for users.");
-
-        return responses;
+        return Optional.of(outputPort.getAll())
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ACCESS_LIST_NOT_FOUND));
     }
 
     /**
@@ -120,17 +111,13 @@ public class AccessService implements AccessUC {
     @Override
     public AccessResponse updateById(AccessRequest request, String id) {
         if (!existsById(id)) {
-            throw new NotFoundException(ExceptionConstants.ACCESS_NOT_FOUND);
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_ACCESS_NOT_FOUND_BY_ID);
         }
 
         AccessDTO modelDto = domainMapper.requestToDTO(request);
         modelDto.setStatus(Status.ACTIVE);
 
-        modelDto = outputPort.updateById(modelDto, id);
-
-        log.info("An access was updated for users and the ID was updated: {}", id);
-
-        return domainMapper.dtoToResponse(modelDto);
+        return outputPort.updateById(modelDto, id);
     }
 
     /**
@@ -141,11 +128,8 @@ public class AccessService implements AccessUC {
      */
     @Override
     public AccessResponse getByAccessName(AccessName accessName) {
-        Optional<AccessDTO> optionalAccessDTO = outputPort.getByAccessName(accessName);
-
-        log.info("An access was retrieved for users and the accessName was retrieved: {}", accessName);
-
-        return domainMapper.dtoToResponse(optionalAccessDTO.orElseThrow(() -> new NotFoundException(ExceptionConstants.ACCESS_NOT_FOUND)));
+        return outputPort.getByAccessName(accessName)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ACCESS_NOT_FOUND_BY_NAME));
     }
 
     /**

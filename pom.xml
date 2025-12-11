@@ -26,17 +26,13 @@
         <module>shared-jpa</module>
         <module>shared-security</module>
         <module>shared-reports</module>
-        <!--module>shared-saga-orchestrator</module-->
-        <!--module>eureka-discovery-server</module-->
-        <!--module>spring-cloud-gateway-server</module-->
         <!--module>websocket-service</module-->
         <!--module>storage-service</module-->
         <module>user-service</module>
         <!--module>oauth2-user-service</module-->
         <module>auth-service</module>
-        <!--module>oauth2-service</module-->
-        <!--module>branch-service</module-->
-        <!-- module>preference-service</module-->
+        <module>oauth2-service</module>
+        <module>store-service</module>
     </modules>
 
     <!-- Properties -->

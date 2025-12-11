@@ -1,6 +1,7 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl;
 
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.IdentificationUSDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.IdentificationUSResponse;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.entity.IdentificationUS;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class IdentificationUSPM implements PersistenceMapper<IdentificationUS, IdentificationUSDTO> {
+public class IdentificationUSPM implements PersistenceMapper<IdentificationUS, IdentificationUSDTO, IdentificationUSResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -36,6 +37,17 @@ public class IdentificationUSPM implements PersistenceMapper<IdentificationUS, I
     @Override
     public IdentificationUSDTO entityToDTO(IdentificationUS entity) {
         return modelMapper.map(entity, IdentificationUSDTO.class);
+    }
+
+    /**
+     * Maps an entity to response
+     *
+     * @param entity persisted
+     * @return payload
+     */
+    @Override
+    public IdentificationUSResponse entityToResponse(IdentificationUS entity) {
+        return modelMapper.map(entity, IdentificationUSResponse.class);
     }
 
     private final ModelMapperCustomized modelMapper;

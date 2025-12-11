@@ -73,18 +73,7 @@ public interface TwoFactorUserRepository extends JpaRepository<TwoFactorUser, St
      */
     @Query("SELECT COUNT(t) > 0 FROM two_factor t WHERE t.userId = :userId AND t.twoFactorType = 'AUTHENTICATOR_SMS'")
     boolean existsPhoneByUserId(@Param("userId") String userId);
-
-    /**
-     * Check if the phone number already exists by userId
-     *
-     * @param userId         the id of the user
-     * @param twoFactorPhone the full phone number to check
-     * @param codeISO        the country code ISO
-     * @return true if the phone number already exists, false otherwise
-     */
-    @Query("SELECT COUNT(t) > 0 FROM two_factor t WHERE t.userId = :userId AND t.twoFactorPhone = :twoFactorPhone AND t.twoFactorCountryCode = :codeIso")
-    boolean matchPhoneByUserId(@Param("userId") String userId, @Param("twoFactorPhone") String twoFactorPhone, @Param("codeIso") CountryCodeISO codeISO);
-
+    
     /**
      * Check if an email already exists by userId
      *

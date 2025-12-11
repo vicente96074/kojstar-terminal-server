@@ -1,7 +1,9 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.RolDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.RolName;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.RolResponse;
 import com.kojstarinnovations.terminal.us.domain.opextends.RolOP;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl.RolPM;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.repository.RolRepository;
@@ -51,10 +53,10 @@ public class RolPA implements RolOP {
      * @return the saved model
      */
     @Override
-    public RolDTO save(RolDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public RolResponse save(RolDTO dto) {
+        return mapper.entityToResponse(
                 rolRepository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -66,9 +68,9 @@ public class RolPA implements RolOP {
      * @return the fetched model
      */
     @Override
-    public Optional<RolDTO> getById(String id) {
+    public Optional<RolResponse> getById(String id) {
         return rolRepository.findById(id)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -78,9 +80,9 @@ public class RolPA implements RolOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<RolDTO> getPage(Pageable pageable) {
+    public Page<RolResponse> getPage(Pageable pageable) {
         return rolRepository.findAll(pageable)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -89,10 +91,10 @@ public class RolPA implements RolOP {
      * @return List<DTO>
      */
     @Override
-    public List<RolDTO> getAll() {
+    public List<RolResponse> getAll() {
         return rolRepository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTO)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -104,8 +106,8 @@ public class RolPA implements RolOP {
      * @return the updated model
      */
     @Override
-    public RolDTO updateById(RolDTO dto, String integer) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public RolResponse updateById(RolDTO dto, String integer) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -115,9 +117,9 @@ public class RolPA implements RolOP {
      * @return Rol DTO
      */
     @Override
-    public Optional<RolDTO> getByRolName(RolName rolName) {
+    public Optional<RolResponse> getByRolName(RolName rolName) {
         return rolRepository.findByRolName(rolName)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -131,5 +133,5 @@ public class RolPA implements RolOP {
     }
 
     private final RolRepository rolRepository;
-    private final RolPM persistenceMapper;
+    private final RolPM mapper;
 }

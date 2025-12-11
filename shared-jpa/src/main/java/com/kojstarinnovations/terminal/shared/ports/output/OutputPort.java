@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
-public interface OutputPort<DTO, ID> {
+public interface OutputPort<DTO, RESPONSE,ID> {
 
     /**
      * Method to save a modelDto
@@ -22,7 +22,7 @@ public interface OutputPort<DTO, ID> {
      * @param dto the modelDto to be saved
      * @return modelDto
      */
-    DTO save(DTO dto);
+    RESPONSE save(DTO dto);
 
     /**
      * Method to get a modelDto by id
@@ -30,7 +30,7 @@ public interface OutputPort<DTO, ID> {
      * @param id the id of the modelDto to be retrieved
      * @return modelDto with the given id
      */
-    Optional<DTO> getById(ID id);
+    Optional<RESPONSE> getById(ID id);
 
     /**
      * Method to get a page of modelDto
@@ -38,14 +38,14 @@ public interface OutputPort<DTO, ID> {
      * @param pageable the pageable object
      * @return Page<DTO>
      */
-    Page<DTO> getPage(Pageable pageable);
+    Page<RESPONSE> getPage(Pageable pageable);
 
     /**
      * Method to get all modelDto
      *
      * @return List<DTO>
      */
-    List<DTO> getAll();
+    List<RESPONSE> getAll();
 
     /**
      * Method to update a modelDto by id
@@ -54,7 +54,7 @@ public interface OutputPort<DTO, ID> {
      * @param id the id of the modelDto to be updated
      * @return modelDto updated
      */
-    DTO updateById(DTO dto, ID id);
+    RESPONSE updateById(DTO dto, ID id);
 
     /**
      * Method to delete a modelDto by id

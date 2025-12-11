@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.auths.vault;
 
+import lombok.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -11,13 +12,13 @@ public class SpringContext implements ApplicationContextAware {
     private static ApplicationContext context;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // Almacena el contexto cuando está listo
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
+        // Stores the context when it's ready
         context = applicationContext;
     }
 
     public static <T> T getBean(Class<T> beanClass) {
-        // Obtiene cualquier bean del contexto
+        // Gets any bean from the context
         return context.getBean(beanClass);
     }
 }

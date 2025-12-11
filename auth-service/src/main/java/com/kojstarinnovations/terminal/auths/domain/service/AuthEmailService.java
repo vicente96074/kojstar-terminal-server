@@ -2,7 +2,7 @@ package com.kojstarinnovations.terminal.auths.domain.service;
 
 import com.kojstarinnovations.terminal.auths.domain.opextends.ForgotPasswordOP;
 import com.kojstarinnovations.terminal.auths.domain.ucextends.AuthUC;
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.ForgotPasswordDTO;
 import com.kojstarinnovations.terminal.commons.data.helper.CodeHelper;
 import com.kojstarinnovations.terminal.commons.data.helper.TokenHelper;
@@ -42,7 +42,7 @@ public class AuthEmailService {
         validatorRequestsService.validateForgotPasswordRequest(request);
 
         UserResponse user = authService.getByEmail(request.getEmail())
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_REGISTERED));
+                .orElseThrow(() -> new NotFoundException(I18nCommonConstants.EXCEPTION_THIS_EMAIL_NOT_REGISTERED));
 
         String token = TokenHelper.generateToken();
         String code = CodeHelper.generateCode();
@@ -78,8 +78,6 @@ public class AuthEmailService {
         // Use 'en' as default, which is consistent with the 'en' property file suffix
         Locale locale = Locale.forLanguageTag(request.getLanguageTag() != null ? request.getLanguageTag() : "en");
         String subjectKey = messageSource.getMessage("email.reset.subject", null, locale);
-        log.info("Language tag for email: {}", request.getLanguageTag());
-        log.info("Locale for email: {}", locale);
 
         forgotPasswordOP.save(dto);
 

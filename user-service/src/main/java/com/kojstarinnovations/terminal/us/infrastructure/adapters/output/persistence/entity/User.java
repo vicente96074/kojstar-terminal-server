@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.kojstarinnovations.terminal.commons.data.constants.PersistenceConstants.AUTH_USERS_TABLE_NAME;
+
 /**
  * User - This entity represents the persistence of the User entity in the database,
  * the id is generated pre-persist and the user has a many-to-many relationship with the Rol and Access entities.
@@ -25,7 +27,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "users")
+@Entity(name = AUTH_USERS_TABLE_NAME)
 @EqualsAndHashCode(callSuper = true)
 public class User extends BasicAudit {
 

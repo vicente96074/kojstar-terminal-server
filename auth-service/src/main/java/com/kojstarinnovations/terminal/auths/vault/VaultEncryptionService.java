@@ -1,11 +1,10 @@
 package com.kojstarinnovations.terminal.auths.vault;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.support.Ciphertext;
 import org.springframework.vault.support.Plaintext;
-import org.springframework.vault.support.VaultTransitContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -13,22 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Servicio para cifrar/descifrar datos usando Vault Transit Engine
+ * Service for encrypting/decrypting data using Vault Transit Engine
+ *
+ * @Author: Kojstar Innovations (Augusto Vicente)
  */
 @Service
+@RequiredArgsConstructor
 public class VaultEncryptionService {
 
-    private static final String TRANSIT_KEY_NAME = "mysql-app-data";
-    private static final String TRANSIT_PATH = "transit";
-
-    @Autowired
-    private VaultTemplate vaultTemplate;
-
     /**
-     * Cifra un texto plano usando Vault Transit
+     * Encrypt plain text using Vault Transit
      *
-     * @param plaintext Texto a cifrar
-     * @return Texto cifrado en formato vault:v1:base64...
+     * @param plaintext Text to encrypt
+     * @return Ciphertext in vault:v1:base64... format
      */
     public String encrypt(String plaintext) {
         if (plaintext == null || plaintext.isEmpty()) {
@@ -36,64 +32,58 @@ public class VaultEncryptionService {
         }
 
         try {
-            // Convertir a bytes y luego a Base64
+            // Convert to bytes and then to Base64
             byte[] bytes = plaintext.getBytes(StandardCharsets.UTF_8);
             String base64 = Base64.getEncoder().encodeToString(bytes);
 
-            // Crear el plaintext para Vault
+            // Create the plaintext for Vault
             Plaintext plaintextObj = Plaintext.of(base64);
 
-            // Cifrar usando Vault
-            return vaultTemplate
-                    .opsForTransit(TRANSIT_PATH)
-                    .encrypt(TRANSIT_KEY_NAME, plaintextObj)
-                    .getCiphertext();
+            // Encrypt using Vault
+            return vaultTemplate.opsForTransit(TRANSIT_PATH).encrypt(TRANSIT_KEY_NAME, plaintextObj).getCiphertext();
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al cifrar datos con Vault", e);
+            throw new RuntimeException("Error encrypting data with Vault", e);
         }
     }
 
     /**
-     * Descifra un texto cifrado por Vault Transit
+     * Decrypt a text encrypted by Vault Transit
      *
-     * @param ciphertext Texto cifrado (formato: vault:v1:...)
-     * @return Texto descifrado
+     * @param ciphertext Ciphertext (format: vault:v1:...)
+     * @return Decrypted text
      */
     public String decrypt(String ciphertext) {
         if (ciphertext == null || ciphertext.isEmpty()) {
             return null;
         }
 
-        // Si no está cifrado (no tiene el prefijo vault:), retornar tal cual
+        // If it is not encrypted (does not have the vault: prefix), return as is
         if (!ciphertext.startsWith("vault:")) {
             return ciphertext;
         }
 
         try {
-            // Crear el objeto ciphertext
+            // Create the ciphertext object
             Ciphertext ciphertextObj = Ciphertext.of(ciphertext);
 
-            // Descifrar usando Vault
-            Plaintext plaintext = vaultTemplate
-                    .opsForTransit(TRANSIT_PATH)
-                    .decrypt(TRANSIT_KEY_NAME, ciphertextObj);
+            // Decrypt using Vault
+            Plaintext plaintext = vaultTemplate.opsForTransit(TRANSIT_PATH).decrypt(TRANSIT_KEY_NAME, ciphertextObj);
 
-            // Decodificar de Base64 a String
+            // Decode from Base64 to String
             byte[] decodedBytes = Base64.getDecoder().decode(plaintext.getPlaintext());
             return new String(decodedBytes, StandardCharsets.UTF_8);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al descifrar datos con Vault", e);
+            throw new RuntimeException("Error decrypting data with Vault", e);
         }
     }
 
     /**
-     * /**
-     * Re-cifra datos con la última versión de la clave (después de rotación)
+     * Re-encrypts data with the latest key version (after rotation)
      *
-     * @param ciphertext Texto cifrado con versión anterior
-     * @return Texto cifrado con la última versión
+     * @param ciphertext Ciphertext with the previous version
+     * @return Ciphertext with the latest version
      */
     public String rewrap(String ciphertext) {
         if (ciphertext == null || !ciphertext.startsWith("vault:")) {
@@ -101,18 +91,18 @@ public class VaultEncryptionService {
         }
 
         try {
-            // Descifrar con la versión antigua
+            // Decipher with the old version
             String decrypted = decrypt(ciphertext);
             return encrypt(decrypted);
         } catch (Exception e) {
-            throw new RuntimeException("Error al re-cifrar datos con Vault", e);
+            throw new RuntimeException("Error re-encrypting data with Vault", e);
         }
     }
 
     /**
-     * Verifica si Vault está disponible y configurado correctamente
+     * Checks if Vault is available and configured correctly
      *
-     * @return true si Vault está disponible
+     * @return true if Vault is available
      */
     public boolean isVaultAvailable() {
         try {
@@ -124,17 +114,16 @@ public class VaultEncryptionService {
     }
 
     /**
-     * Obtiene información sobre la clave de cifrado
+     * Gets information about the encryption key
      *
-     * @return Map con información de la clave
+     * @return Map with key information
      */
     public Map<String, Object> getKeyInfo() {
         try {
-            var keyInfo = vaultTemplate
-                    .opsForTransit(TRANSIT_PATH)
-                    .getKey(TRANSIT_KEY_NAME);
+            var keyInfo = vaultTemplate.opsForTransit(TRANSIT_PATH).getKey(TRANSIT_KEY_NAME);
 
             Map<String, Object> info = new HashMap<>();
+            assert keyInfo != null;
             info.put("name", keyInfo.getName());
             info.put("latestVersion", keyInfo.getLatestVersion());
             info.put("minDecryptionVersion", keyInfo.getMinDecryptionVersion());
@@ -143,7 +132,11 @@ public class VaultEncryptionService {
 
             return info;
         } catch (Exception e) {
-            throw new RuntimeException("Error al obtener información de la clave", e);
+            throw new RuntimeException("Error retrieving key information", e);
         }
     }
+
+    private static final String TRANSIT_KEY_NAME = "mysql-app-data";
+    private static final String TRANSIT_PATH = "transit";
+    private final VaultTemplate vaultTemplate;
 }

@@ -17,20 +17,4 @@ public interface JwtService {
      * @return String token
      */
     String generateAccessToken(Authentication authentication);
-
-    /**
-     * Method to validate the token
-     *
-     * @param token the token to be validated
-     * @return boolean true if the token is valid, false otherwise
-     */
-    boolean validateToken(String token);
-
-    /**
-     * Method to get the username from the token
-     *
-     * @param token the token to be used
-     * @return String username
-     */
-    String getUsernameFromToken(String token);
 }

@@ -1,5 +1,7 @@
 package com.kojstarinnovations.terminal.auths.vault;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nAuthConstants;
+import com.kojstarinnovations.terminal.commons.exception.VaultException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.metamodel.EntityType;
 import jakarta.transaction.Transactional;
@@ -17,71 +19,65 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Job para re-cifrar automáticamente datos después de rotación de claves en Vault
+ * Job to automatically re-encrypt data after key rotation in Vault
  * <p>
- * Detecta automáticamente todas las entidades JPA que tienen campos con @Convert(converter = EncryptionConverter.class)
- * y los re-cifra con la última versión de la clave de Vault.
+ * Automatically detects all JPA entities that have fields with @Convert(converter = EncryptionConverter Class)
+ * and re-encrypts them with the latest version of the Vault key.
  *
- * @Author: Kojstar Innovations
+ * @Author: Kojstar Innovations (Augusto Vicente)
  */
-//@Component
 @Slf4j
 @RequiredArgsConstructor
 @Service
 @Component
 public class DataRewrapJob {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-    private final VaultEncryptionService vaultService;
-
     /**
-     * Ejecuta el re-cifrado de forma manual
-     *
+     * Performs manual re-encryption
      */
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void rewrapAllEncryptedData() {
-        log.info("Iniciando proceso de re-cifrado de datos...");
+        log.info("Starting data re-encryption process...");
         long startTime = System.currentTimeMillis();
 
         try {
-            // 1. Obtener todas las entidades con campos cifrados
+            // 1. Obtain all entities with encrypted fields
             List<Class<?>> encryptedEntities = findEntitiesWithEncryptedFields();
 
-            // 2. Re-cifrar cada entidad
+            // 2. Re-encrypt each entity
             for (Class<?> entityClass : encryptedEntities) {
                 try {
                     rewrapEntity(entityClass);
                     log.info("Entity {} rewrapped successfully", entityClass.getName());
                 } catch (Exception e) {
-                    log.error("❌ Error al re-cifrar entidad {}: {}",
-                            entityClass.getSimpleName(), e.getMessage());
+                    log.error("❌ Error re-encrypting entity {}: {}", entityClass.getSimpleName(), e.getMessage());
                 }
             }
 
             long duration = System.currentTimeMillis() - startTime;
 
-            log.info("✅ Re-cifrado completado en {}ms", duration);
+            log.info("✅ Re-encryption completed in {}ms", duration);
 
         } catch (Exception e) {
-            log.error("❌ Error fatal en el proceso de re-cifrado", e);
+            log.error("❌ Fatal error in the re-encryption process", e);
+            throw new VaultException(I18nAuthConstants.EXCEPTION_REWRAP_ALL_ENTITY_EXCEPTION);
         }
     }
 
     /**
-     * Encuentra todas las entidades JPA que tienen campos con @Convert(EncryptionConverter)
+     * Find all JPA entities that have fields with @Convert(EncryptionConverter)
      */
     private List<Class<?>> findEntitiesWithEncryptedFields() {
         Set<Class<?>> encryptedEntities = new HashSet<>();
 
-        // Obtener todas las entidades registradas en el EntityManager
+        // Get all entities registered in the EntityManager
         Set<EntityType<?>> entities = entityManager.getMetamodel().getEntities();
 
         for (EntityType<?> entity : entities) {
             Class<?> entityClass = entity.getJavaType();
 
-            // Verificar si tiene campos cifrados
+            // Check if it has encrypted fields
             if (hasEncryptedFields(entityClass)) {
                 encryptedEntities.add(entityClass);
             }
@@ -91,7 +87,7 @@ public class DataRewrapJob {
     }
 
     /**
-     * Verifica si una entidad tiene campos con @Convert(EncryptionConverter)
+     * Checks if an entity has fields with @Convert(EncryptionConverter)
      */
     private boolean hasEncryptedFields(Class<?> entityClass) {
         for (Field field : getAllFields(entityClass)) {
@@ -106,7 +102,7 @@ public class DataRewrapJob {
     }
 
     /**
-     * Obtiene todos los campos de una clase (incluyendo heredados)
+     * Gets all fields of a class (including inherited ones)
      */
     private List<Field> getAllFields(Class<?> clazz) {
         List<Field> fields = new ArrayList<>();
@@ -121,32 +117,32 @@ public class DataRewrapJob {
     }
 
     /**
-     * Re-cifra todos los registros de una entidad específica
+     * Re-encrypts all records for a specific entity
      */
     @Transactional
     public void rewrapEntity(Class<?> entityClass) {
 
         try {
-            // 1. Obtener nombre de la entidad
+            // 1. Obtain entity name
             String entityName = entityClass.getSimpleName();
             Entity entityAnnotation = entityClass.getAnnotation(Entity.class);
             if (entityAnnotation != null && !entityAnnotation.name().isEmpty()) {
                 entityName = entityAnnotation.name();
             }
 
-            // 2. Obtener todos los registros
+            // 2. Get all records
             String queryStr = "SELECT e FROM " + entityName + " e";
             List<?> entities = entityManager.createQuery(queryStr).getResultList();
 
             if (entities.isEmpty()) {
-                log.info("Entity {} no encontrado", entityName);
+                log.info("Entity {} not found", entityName);
                 return;
             }
 
-            // 3. Obtener campos cifrados
+            // 3. Obtain encrypted fields
             List<Field> encryptedFields = getEncryptedFields(entityClass);
 
-            // 4. Re-cifrar cada registro
+            // 4. Re-encrypt each record
             for (Object entity : entities) {
                 boolean entityModified = false;
 
@@ -157,32 +153,19 @@ public class DataRewrapJob {
                         String currentValue = (String) field.get(entity);
                         log.info("Current value {}", currentValue);
 
-                        // Solo re-cifrar si el valor está cifrado
+                        // Only re-encrypt if the value is encrypted
                         if (currentValue != null && currentValue.startsWith("vault:")) {
-                            //log.info("Entity {} encontrado", entityName);
                             String rewrapped = vaultService.rewrap(currentValue);
 
-                            // Solo actualizar si cambió la versión
+                            // Only update if the version has changed
                             if (!currentValue.equals(rewrapped)) {
                                 field.set(entity, rewrapped);
                                 entityModified = true;
                             }
                         }
 
-                        /*// Cifrar valores existentes que no han sido cifrados
-                        if (currentValue != null && !(currentValue.startsWith("vault:"))) {
-                            log.info("Entity not encrypted field {} encontrado", entityName);
-
-                            String encryptedValue = vaultService.encrypt(currentValue);
-                            if (!currentValue.equals(encryptedValue)) {
-                                field.set(entity, encryptedValue);
-                                entityModified = false;
-                            }
-                        }*/
-
                     } catch (Exception e) {
-                        log.error("❌ Error al re-cifrar campo {} en {}: {}",
-                                field.getName(), entityName, e.getMessage());
+                        log.error("❌ Error re-encrypting field {} in {}: {}", field.getName(), entityName, e.getMessage());
                     }
                 }
 
@@ -195,14 +178,13 @@ public class DataRewrapJob {
             // 5. Flush cambios
             entityManager.flush();
         } catch (Exception e) {
-            e.printStackTrace();
             log.error("Exception: {}", String.valueOf(e));
-            throw new RuntimeException("Error en rewrap de " + entityClass.getSimpleName(), e);
+            throw new RuntimeException("Exception: " + e.getMessage());
         }
     }
 
     /**
-     * Obtiene los campos de una entidad que usan EncryptionConverter
+     * Gets the fields of an entity that use EncryptionConverter
      */
     private List<Field> getEncryptedFields(Class<?> entityClass) {
         return getAllFields(entityClass).stream()
@@ -212,4 +194,8 @@ public class DataRewrapJob {
                 })
                 .collect(Collectors.toList());
     }
+
+    @PersistenceContext
+    private EntityManager entityManager;
+    private final VaultEncryptionService vaultService;
 }

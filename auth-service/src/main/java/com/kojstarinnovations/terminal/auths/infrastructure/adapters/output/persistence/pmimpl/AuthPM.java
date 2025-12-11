@@ -5,9 +5,13 @@ import com.kojstarinnovations.terminal.commons.data.dto.userservice.AccessDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.RolDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.UserDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.AccessResponse;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.RolResponse;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -17,9 +21,10 @@ import java.util.stream.Collectors;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class AuthPM implements PersistenceMapper<User, UserDTO> {
+public class AuthPM implements PersistenceMapper<User, UserDTO, UserResponse> {
 
     /**
      * Maps a UserDTO to a User entity
@@ -44,16 +49,59 @@ public class AuthPM implements PersistenceMapper<User, UserDTO> {
     }
 
     /**
+     * Maps an entity to response
+     *
+     * @param entity persisted
+     * @return payload
+     */
+    @Override
+    public UserResponse entityToResponse(User entity) {
+        return modelMapper.map(entity, UserResponse.class);
+    }
+
+    /**
+     * Maps a User entity to a UserDTO with Access and Roles
+     *
+     * @param entity the entity
+     * @return UserDTO data transfer object
+     */
+    public UserResponse entityToResponseWithAccessAndRoles(User entity) {
+        //log.info("User entity: {}", entity.getUserRoles());
+
+        UserResponse response = modelMapper.map(entity, UserResponse.class);
+
+        if (entity.getUserAccesses() != null && !entity.getUserAccesses().isEmpty()) {
+            response.setAccessResponses(entity.getUserAccesses().stream()
+                    .filter(userAccess -> userAccess.getStatus() == Status.ACTIVE && userAccess.getAccess() != null)
+                    .map(userAccess -> modelMapper.map(userAccess.getAccess(), AccessResponse.class))
+                    .toList()
+            );
+        }
+
+        if (entity.getUserRoles() != null && !entity.getUserRoles().isEmpty()) {
+            response.setRolResponses(entity.getUserRoles().stream()
+                    .filter(userRole -> userRole.getStatus() == Status.ACTIVE && userRole.getRol() != null)
+                    .map(userRole -> modelMapper.map(userRole.getRol(), RolResponse.class))
+                    .collect(Collectors.toList())
+            );
+        }
+
+        return response;
+    }
+
+    /**
      * Maps a User entity to a UserDTO with Access and Roles
      *
      * @param entity the entity
      * @return UserDTO data transfer object
      */
     public UserDTO entityToDtoWithAccessAndRoles(User entity) {
-        UserDTO dto = modelMapper.map(entity, UserDTO.class);
+        //log.info("User entity: {}", entity.getUserRoles());
+
+        UserDTO response = modelMapper.map(entity, UserDTO.class);
 
         if (entity.getUserAccesses() != null && !entity.getUserAccesses().isEmpty()) {
-            dto.setAccessDTOs(entity.getUserAccesses().stream()
+            response.setAccessDTOs(entity.getUserAccesses().stream()
                     .filter(userAccess -> userAccess.getStatus() == Status.ACTIVE && userAccess.getAccess() != null)
                     .map(userAccess -> modelMapper.map(userAccess.getAccess(), AccessDTO.class))
                     .toList()
@@ -61,14 +109,14 @@ public class AuthPM implements PersistenceMapper<User, UserDTO> {
         }
 
         if (entity.getUserRoles() != null && !entity.getUserRoles().isEmpty()) {
-            dto.setRolDTOs(entity.getUserRoles().stream()
+            response.setRolDTOs(entity.getUserRoles().stream()
                     .filter(userRole -> userRole.getStatus() == Status.ACTIVE && userRole.getRol() != null)
                     .map(userRole -> modelMapper.map(userRole.getRol(), RolDTO.class))
                     .collect(Collectors.toList())
             );
         }
 
-        return dto;
+        return response;
     }
 
     private final ModelMapperCustomized modelMapper;

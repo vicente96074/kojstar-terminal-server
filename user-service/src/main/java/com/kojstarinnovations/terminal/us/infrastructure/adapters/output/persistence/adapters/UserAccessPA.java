@@ -1,5 +1,7 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserAccessResponse;
 import com.kojstarinnovations.terminal.us.domain.model.UserAccessDTO;
 import com.kojstarinnovations.terminal.us.domain.model.UserAccessIDDTO;
 import com.kojstarinnovations.terminal.us.domain.opextends.UserAccessOP;
@@ -30,10 +32,10 @@ public class UserAccessPA implements UserAccessOP {
      * @return modelDto
      */
     @Override
-    public UserAccessDTO save(UserAccessDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public UserAccessResponse save(UserAccessDTO dto) {
+        return mapper.entityToResponse(
                 repository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -45,11 +47,11 @@ public class UserAccessPA implements UserAccessOP {
      * @return modelDto with the given id
      */
     @Override
-    public Optional<UserAccessDTO> getById(UserAccessIDDTO id) {
+    public Optional<UserAccessResponse> getById(UserAccessIDDTO id) {
         return repository.findById(UserAccessId.builder()
                         .accessId(id.getAccessId())
                         .userId(id.getUserId()).build())
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -59,9 +61,9 @@ public class UserAccessPA implements UserAccessOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<UserAccessDTO> getPage(Pageable pageable) {
+    public Page<UserAccessResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -70,10 +72,10 @@ public class UserAccessPA implements UserAccessOP {
      * @return List<DTO>
      */
     @Override
-    public List<UserAccessDTO> getAll() {
+    public List<UserAccessResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTO)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -85,8 +87,8 @@ public class UserAccessPA implements UserAccessOP {
      * @return modelDto updated
      */
     @Override
-    public UserAccessDTO updateById(UserAccessDTO dto, UserAccessIDDTO id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public UserAccessResponse updateById(UserAccessDTO dto, UserAccessIDDTO id) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -125,5 +127,5 @@ public class UserAccessPA implements UserAccessOP {
     }
 
     private final UserAccessRepository repository;
-    private final UserAccessPM persistenceMapper;
+    private final UserAccessPM mapper;
 }

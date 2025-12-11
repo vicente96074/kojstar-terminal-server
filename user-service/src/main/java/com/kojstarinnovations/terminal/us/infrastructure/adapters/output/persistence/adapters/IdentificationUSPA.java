@@ -1,8 +1,11 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.IdentificationUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.IdentificationType;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
+import com.kojstarinnovations.terminal.commons.data.payload.commons.IdentificationResponse;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.IdentificationUSResponse;
 import com.kojstarinnovations.terminal.us.domain.opextends.IdentificationUSOP;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl.IdentificationUSPM;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.repository.IdentificationUSRepository;
@@ -31,10 +34,10 @@ public class IdentificationUSPA implements IdentificationUSOP {
      * @return modelDto
      */
     @Override
-    public IdentificationUSDTO save(IdentificationUSDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public IdentificationUSResponse save(IdentificationUSDTO dto) {
+        return mapper.entityToResponse(
                 repository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -46,9 +49,9 @@ public class IdentificationUSPA implements IdentificationUSOP {
      * @return modelDto with the given id
      */
     @Override
-    public Optional<IdentificationUSDTO> getById(String id) {
+    public Optional<IdentificationUSResponse> getById(String id) {
         return repository.findById(id)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -58,9 +61,9 @@ public class IdentificationUSPA implements IdentificationUSOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<IdentificationUSDTO> getPage(Pageable pageable) {
+    public Page<IdentificationUSResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -69,10 +72,10 @@ public class IdentificationUSPA implements IdentificationUSOP {
      * @return List<DTO>
      */
     @Override
-    public List<IdentificationUSDTO> getAll() {
+    public List<IdentificationUSResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTO)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -84,8 +87,8 @@ public class IdentificationUSPA implements IdentificationUSOP {
      * @return modelDto updated
      */
     @Override
-    public IdentificationUSDTO updateById(IdentificationUSDTO dto, String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public IdentificationUSResponse updateById(IdentificationUSDTO dto, String id) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -95,7 +98,7 @@ public class IdentificationUSPA implements IdentificationUSOP {
      */
     @Override
     public void deleteById(String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -123,5 +126,5 @@ public class IdentificationUSPA implements IdentificationUSOP {
     }
 
     private final IdentificationUSRepository repository;
-    private final IdentificationUSPM persistenceMapper;
+    private final IdentificationUSPM mapper;
 }

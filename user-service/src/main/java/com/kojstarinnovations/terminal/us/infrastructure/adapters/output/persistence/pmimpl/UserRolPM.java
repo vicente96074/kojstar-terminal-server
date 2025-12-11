@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl;
 
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserRolResponse;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.us.domain.model.UserRolDTO;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class UserRolPM implements PersistenceMapper<UserRol, UserRolDTO> {
+public class UserRolPM implements PersistenceMapper<UserRol, UserRolDTO, UserRolResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -36,6 +37,17 @@ public class UserRolPM implements PersistenceMapper<UserRol, UserRolDTO> {
     @Override
     public UserRolDTO entityToDTO(UserRol entity) {
         return modelMapper.map(entity, UserRolDTO.class);
+    }
+
+    /**
+     * Maps an entity to response
+     *
+     * @param userRol persisted
+     * @return payload
+     */
+    @Override
+    public UserRolResponse entityToResponse(UserRol userRol) {
+        return modelMapper.map(userRol, UserRolResponse.class);
     }
 
     private final ModelMapperCustomized modelMapper;

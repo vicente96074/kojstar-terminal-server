@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.TwoFactorType;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.TwoFactorStatus;
@@ -46,7 +46,7 @@ public class TwoFactorUserService implements TwoFactorUserUC {
     @Override
     public void deleteById(String id) {
         if (!outputPort.existsById(id)) {
-            throw new NotFoundException(ExceptionConstants.TWO_FACTOR_NOT_FOUND);
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_TWO_FACTOR_NOT_FOUND_BY_ID);
         }
         outputPort.deleteById(id);
     }
@@ -71,7 +71,7 @@ public class TwoFactorUserService implements TwoFactorUserUC {
     @Override
     public TwoFactorUserResponse getById(String id) {
         return outputPort.getById(id)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.TWO_FACTOR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_TWO_FACTOR_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -171,22 +171,6 @@ public class TwoFactorUserService implements TwoFactorUserUC {
     public boolean existPhoneBySub(String sub) {
         return outputPort.existsPhoneBySub(
                 sub
-        );
-    }
-
-    /**
-     * Check if the phone number already exists by sub
-     *
-     * @param sub             the id of the user
-     * @param fullPhoneNumber the full phone number to check
-     * @return true if the phone number already exists, false otherwise
-     */
-    @Override
-    public boolean matchPhoneBySubAndCountryCode(String sub, String fullPhoneNumber, CountryCodeISO codeISO) {
-        return outputPort.matchPhoneBySub(
-                sub,
-                fullPhoneNumber,
-                codeISO
         );
     }
 

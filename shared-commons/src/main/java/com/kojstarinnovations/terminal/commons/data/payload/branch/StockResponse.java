@@ -1,6 +1,7 @@
 package com.kojstarinnovations.terminal.commons.data.payload.branch;
 
 import com.kojstarinnovations.terminal.commons.data.payload.commons.AuditAttributeResponse;
+import com.kojstarinnovations.terminal.commons.data.payload.storeservice.StoreResponse;
 import lombok.*;
 
 import java.math.BigDecimal;

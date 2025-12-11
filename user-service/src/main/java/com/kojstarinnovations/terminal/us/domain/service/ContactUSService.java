@@ -1,12 +1,13 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.ContactUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.ContactType;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.ContactUSResponse;
 import com.kojstarinnovations.terminal.commons.exception.DuplicateException;
+import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import com.kojstarinnovations.terminal.us.application.data.request.ContactUSRequest;
 import com.kojstarinnovations.terminal.us.domain.dmimpl.ContactUSDM;
 import com.kojstarinnovations.terminal.us.domain.opextends.ContactUSOP;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -41,16 +43,16 @@ public class ContactUSService implements ContactUSUC {
                         request.getPhoneNumber(),
                         ContactType.PHONE,
                         CountryCodeISO.fromCode(request.getCountryCode())
-                                .orElseThrow(() -> new DuplicateException(ExceptionConstants.COUNTRY_CODE_NOT_FOUND))
+                                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_COUNTRY_CODE_NOT_FOUND))
                 ) :
                 outputPort.existsByEmailAndContactType(request.getEmail(), ContactType.EMAIL);
 
         if (exists) {
-            throw new DuplicateException(ExceptionConstants.DUPLICATE_CONTACT);
+            throw new DuplicateException(I18nUserConstants.EXCEPTION_CONTACT_DUPLICATE);
         }
 
         if (outputPort.existsByPrimaryContactAndUserId(request.getUserId()) && request.getPrimaryContact()) {
-            throw new DuplicateException(ExceptionConstants.DUPLICATE_PRIMARY_CONTACT);
+            throw new DuplicateException(I18nUserConstants.EXCEPTION_CONTACT_DUPLICATE_PRIMARY);
         }
 
         if (type == ContactType.PHONE) {
@@ -66,19 +68,18 @@ public class ContactUSService implements ContactUSUC {
         ContactUSDTO dto = domainMapper.requestToDTO(request);
         dto.setId(null);
         dto.setStatus(Status.ACTIVE);
-        ContactUSResponse response = outputPort.save(dto);
 
-        return response;
+        return outputPort.save(dto);
     }
 
     /**
      * Delete an entity by its id with transactional support
      *
-     * @param s the id of the entity to be deleted
+     * @param id the id of the entity to be deleted
      */
     @Override
-    public void deleteById(String s) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public void deleteById(String id) {
+        outputPort.deleteById(id);
     }
 
     /**
@@ -89,18 +90,19 @@ public class ContactUSService implements ContactUSUC {
      */
     @Override
     public boolean existsById(String s) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return outputPort.existsById(s);
     }
 
     /**
      * Get object by id
      *
-     * @param s id of the object to be retrieved
+     * @param id id of the object to be retrieved
      * @return QueryResponse
      */
     @Override
-    public ContactUSResponse getById(String s) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ContactUSResponse getById(String id) {
+        return outputPort.getById(id)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -111,7 +113,9 @@ public class ContactUSService implements ContactUSUC {
      */
     @Override
     public Page<ContactUSResponse> getPage(Pageable pageable) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return Optional.of(outputPort.getPage(pageable))
+                .filter(page -> !page.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_PAGE_NOT_FOUND));
     }
 
     /**
@@ -121,19 +125,21 @@ public class ContactUSService implements ContactUSUC {
      */
     @Override
     public List<ContactUSResponse> getAll() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return Optional.of(outputPort.getAll())
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_ALL_NOT_FOUND));
     }
 
     /**
      * Update object by id
      *
      * @param request the object to be updated
-     * @param s       id of the object to be updated
+     * @param id      id of the object to be updated
      * @return QueryResponse the updated object
      */
     @Override
-    public ContactUSResponse updateById(ContactUSRequest request, String s) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public ContactUSResponse updateById(ContactUSRequest request, String id) {
+        return outputPort.updateById(domainMapper.requestToDTO(request), id);
     }
 
     /**
@@ -143,21 +149,15 @@ public class ContactUSService implements ContactUSUC {
      */
     @Override
     public List<ContactUSResponse> getAllActivePhonesByAuth() {
-        return outputPort.getAllActivePhonesBySub(userDetailsService.getUserFromAuth().getSub());
+        return Optional.of(outputPort.getAllActivePhonesBySub(userDetailsService.getUserFromAuth().getSub()))
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_ALL_NOT_FOUND_BY_SESSION));
     }
 
-    /**
-     * Validate if the phone number already exists by sub and country code
-     *
-     * @param phoneNumber the phone number to check
-     * @param sub         the sub of the user
-     * @param countryCode the country code to check
-     * @return true if the phone number exists, false otherwise
-     */
     @Override
     public boolean existPhoneBySubAndCountryCode(String phoneNumber, String sub, String countryCode) {
         CountryCodeISO countryCodeISO = CountryCodeISO.fromCode(countryCode)
-                .orElseThrow(() -> new DuplicateException(ExceptionConstants.COUNTRY_CODE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_COUNTRY_CODE_NOT_FOUND));
 
         return outputPort.existsPhoneBySubAndCountryCode(
                 phoneNumber,

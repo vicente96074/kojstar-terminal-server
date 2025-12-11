@@ -10,6 +10,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,8 +71,8 @@ public class UserRequest extends CommonsRequest {
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     private String userSettingId;
 
-    private Set<String> rolesRequest = new HashSet<>();
-    private Set<String> accessesRequest = new HashSet<>();
+    private List<String> rolesRequest;
+    private List<String> accessesRequest;
 
     @Valid
     @RequestClassRequired(message = ValidationConstants.IDENTIFICATION_REQUEST_REQUIRED)

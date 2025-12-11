@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.shared.coverters.enums;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.RegionCodeISO;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import jakarta.persistence.AttributeConverter;
@@ -17,6 +17,6 @@ public class RegionCodeISOConverter implements AttributeConverter<RegionCodeISO,
     @Override
     public RegionCodeISO convertToEntityAttribute(String dbData) {
         return RegionCodeISO.fromCode(dbData)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.REGION_CODE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(I18nCommonConstants.EXCEPTION_REGION_CODE_NOT_FOUND));
     }
 }

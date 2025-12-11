@@ -1,6 +1,8 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AddressUSDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.AddressUSResponse;
 import com.kojstarinnovations.terminal.us.domain.opextends.AddressUSOP;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl.AddressUSPM;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.repository.AddressUSRepository;
@@ -28,10 +30,10 @@ public class AddressUSPA implements AddressUSOP {
      * @return modelDto
      */
     @Override
-    public AddressUSDTO save(AddressUSDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public AddressUSResponse save(AddressUSDTO dto) {
+        return mapper.entityToResponse(
                 repository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -43,9 +45,9 @@ public class AddressUSPA implements AddressUSOP {
      * @return modelDto with the given id
      */
     @Override
-    public Optional<AddressUSDTO> getById(String id) {
+    public Optional<AddressUSResponse> getById(String id) {
         return repository.findById(id)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -55,9 +57,9 @@ public class AddressUSPA implements AddressUSOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<AddressUSDTO> getPage(Pageable pageable) {
+    public Page<AddressUSResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -66,10 +68,10 @@ public class AddressUSPA implements AddressUSOP {
      * @return List<DTO>
      */
     @Override
-    public List<AddressUSDTO> getAll() {
+    public List<AddressUSResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTO)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -81,8 +83,8 @@ public class AddressUSPA implements AddressUSOP {
      * @return modelDto updated
      */
     @Override
-    public AddressUSDTO updateById(AddressUSDTO dto, String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public AddressUSResponse updateById(AddressUSDTO dto, String id) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -92,7 +94,7 @@ public class AddressUSPA implements AddressUSOP {
      */
     @Override
     public void deleteById(String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -107,5 +109,5 @@ public class AddressUSPA implements AddressUSOP {
     }
 
     private final AddressUSRepository repository;
-    private final AddressUSPM persistenceMapper;
+    private final AddressUSPM mapper;
 }

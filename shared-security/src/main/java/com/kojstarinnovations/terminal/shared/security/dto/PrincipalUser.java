@@ -2,6 +2,7 @@ package com.kojstarinnovations.terminal.shared.security.dto;
 
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.UserDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,6 +35,8 @@ public class PrincipalUser implements UserDetails {
      * @return A PrincipalUser object
      */
     public static PrincipalUser build(UserDTO dto) {
+
+        //log.info("{}", payload);
 
         List<GrantedAuthority> authorities =
                 dto.getRolDTOs().stream().map(rol -> new SimpleGrantedAuthority(rol.getRolName().name())).collect(Collectors.toList());

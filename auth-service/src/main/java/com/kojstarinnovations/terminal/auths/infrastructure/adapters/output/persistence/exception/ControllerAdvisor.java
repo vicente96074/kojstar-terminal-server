@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.exception;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nAuthConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.ExceptionType;
 import com.kojstarinnovations.terminal.commons.exception.Advisor;
 import com.kojstarinnovations.terminal.commons.exception.response.ExceptionResponse;
@@ -34,7 +34,7 @@ public class ControllerAdvisor extends Advisor {
                 ExceptionResponse.builder()
                         .date(LocalDateTime.now())
                         .type(ExceptionType.USER_NOT_FOUND)
-                        .details(ex.getMessage())
+                        .details(I18nAuthConstants.EXCEPTION_USERNAME_NOT_FOUND)
                         .build(),
                 HttpStatus.NOT_FOUND);
     }
@@ -47,11 +47,12 @@ public class ControllerAdvisor extends Advisor {
      */
     @ExceptionHandler(BadCredentialsException.class)
     public final ResponseEntity<ExceptionResponse> handleBadCredentialsException(BadCredentialsException ex) {
+        ex.printStackTrace();
         return new ResponseEntity<>(
                 ExceptionResponse.builder()
                         .date(LocalDateTime.now())
                         .type(ExceptionType.BAD_CREDENTIALS)
-                        .details(ExceptionConstants.USERNAME_OR_PASSWORD_INVALID)
+                        .details(I18nAuthConstants.EXCEPTION_USERNAME_OR_PASSWORD_INVALID)
                         .build(),
                 HttpStatus.UNAUTHORIZED);
     }

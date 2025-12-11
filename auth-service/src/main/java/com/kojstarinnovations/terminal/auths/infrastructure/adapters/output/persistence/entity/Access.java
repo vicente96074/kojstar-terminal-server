@@ -1,16 +1,10 @@
 package com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.entity;
 
-import com.kojstarinnovations.terminal.commons.data.enums.AccessName;
-import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
-import com.kojstarinnovations.terminal.commons.data.enums.Status;
-import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
-import com.kojstarinnovations.terminal.shared.coverters.enums.AccessNameConverter;
-import com.kojstarinnovations.terminal.shared.coverters.enums.StatusConverter;
+import com.kojstarinnovations.terminal.shared.entity.AccessEnt;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import static com.kojstarinnovations.terminal.commons.data.constants.PersistenceConstants.AUTH_ACCESSES_TABLE_NAME;
 
 /**
  * Access - This entity represents the persistence of the Access entity in the database,
@@ -18,28 +12,14 @@ import lombok.NoArgsConstructor;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
+@EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "access")
+@Entity(name = AUTH_ACCESSES_TABLE_NAME)
 @Builder
-public class Access {
+public class Access extends AccessEnt {
 
     @Id
     private String id;
-
-    @Column(name = "access_name", columnDefinition = "VARCHAR(25) DEFAULT 'CUSTOMER'")
-    @Convert(converter = AccessNameConverter.class)
-    private AccessName accessName;
-
-    @Column(name = "status", columnDefinition = "VARCHAR(12) DEFAULT 'PENDING'")
-    @Convert(converter = StatusConverter.class)
-    private Status status;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) {
-            this.id = UUIDHelper.generateUUID(PrefixCodesISO.ACCESS_ID.getCode(), 8);
-        }
-    }
 }

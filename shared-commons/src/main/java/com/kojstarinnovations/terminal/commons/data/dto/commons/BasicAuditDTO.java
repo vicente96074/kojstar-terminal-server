@@ -5,12 +5,14 @@ import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class BasicAuditDTO {
     private String createdBy;
     private String updatedBy;

@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class ForgotPasswordDTO {
-    private String transactionId;
     private String email;
     private String username;
     private String userId;

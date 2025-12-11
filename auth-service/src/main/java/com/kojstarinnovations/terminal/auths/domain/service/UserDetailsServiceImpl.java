@@ -3,8 +3,9 @@ package com.kojstarinnovations.terminal.auths.domain.service;
 import com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.entity.User;
 import com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.pmimpl.AuthPM;
 import com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.repository.AuthRepository;
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nAuthConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.UserDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
 import com.kojstarinnovations.terminal.shared.security.dto.PrincipalUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,19 +40,23 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<User> opUser = repository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
 
         if (opUser.isEmpty()) {
-            throw new UsernameNotFoundException(ExceptionConstants.USER_NOT_FOUND);
+            throw new UsernameNotFoundException(I18nAuthConstants.EXCEPTION_USER_NOT_FOUND);
         }
 
-        UserDTO userDto = persistenceMapper.entityToDtoWithAccessAndRoles(opUser.get());
-        //log.info("PrincipalUser: {}", user);
-        return PrincipalUser.build(userDto);
+        log.info("UserDTO: {}", opUser.get().getPassword());
+
+        UserDTO dto = persistenceMapper.entityToDtoWithAccessAndRoles(opUser.get());
+
+        //log.info("UserResp: {}", userResponse);
+
+        return PrincipalUser.build(dto);
     }
 
     public UserDetails loadUserBySub(String sub) throws UsernameNotFoundException {
         Optional<User> opUser = repository.findById(sub);
 
         if (opUser.isEmpty()) {
-            throw new UsernameNotFoundException(ExceptionConstants.USER_NOT_FOUND);
+            throw new UsernameNotFoundException(I18nAuthConstants.EXCEPTION_USER_NOT_FOUND);
         }
 
         UserDTO dto = persistenceMapper.entityToDtoWithAccessAndRoles(opUser.get());

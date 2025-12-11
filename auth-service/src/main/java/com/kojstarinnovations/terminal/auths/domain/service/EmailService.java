@@ -26,20 +26,20 @@ public class EmailService {
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
-        // Configurar contexto de Thymeleaf
+        // Configure thymeleaf context
         Context context = new Context(locale);
         context.setVariables(variables);
 
-        // Procesar plantilla
+        // Process template
         String html = templateEngine.process(template, context);
 
-        // Configurar email
+        // Email configuration
         helper.setTo(mailTo);
         helper.setText(html, true);
         helper.setSubject(subject);
         helper.setFrom(sender);
 
-        // Agregar recursos inline de manera más robusta
+        // Add inline resources more robustly
         if (inlineResources != null) {
             for (Map.Entry<String, Object> entry : inlineResources.entrySet()) {
                 if (entry.getValue() instanceof String resourcePath) {
@@ -48,7 +48,7 @@ public class EmailService {
             }
         }
 
-        // Enviar email
+        // Send email
         javaMailSender.send(message);
     }
 

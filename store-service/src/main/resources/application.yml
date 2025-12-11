@@ -1,0 +1,97 @@
+# Server configuration (Dinamyc port number)
+server:
+  ssl:
+    enabled: false
+    key-alias: ${KOJSTAR_TERMINAL_SSL_KEY_ALIAS}
+    key-store: file:${KOJSTAR_TERMINAL_SSL_KEY_STORE}
+    key-store-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+    key-store-type: PKCS12
+    key-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+  port: 8090
+
+# Spring application configuration
+spring:
+  datasource:
+    url: ${KOJSTAR_TERMINAL_STORE_SERVICE_DB_URL}
+    username: ${KOJSTAR_TERMINAL_MYSQL_USERNAME}
+    password: ${KOJSTAR_TERMINAL_MYSQL_PASSWORD}
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 10
+      max-lifetime: 60000
+      validation-timeout: 3000
+      idle-timeout: 60000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: false
+  transaction:
+    propagation: REQUIRED
+  jackson:
+    time-zone: ${KOJSTAR_TERMINAL_TIME_ZONE}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  mail:
+    host: ${KOJSTAR_TERMINAL_EMAIL_HOST}
+    port: ${KOJSTAR_TERMINAL_EMAIL_PORT}
+    protocol: ${KOJSTAR_TERMINAL_EMAIL_PROTOCOL}
+    username: ${KOJSTAR_TERMINAL_EMAIL_USERNAME}
+    password: ${KOJSTAR_TERMINAL_EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}
+          jwk-set-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}/oauth2/jwks
+  redis:
+    host: ${KOJSTAR_TERMINAL_SPRING_REDIS_HOST}  # Usa el nombre del servicio Docker
+    port: ${KOJSTAR_TERMINAL_SPRING_REDIS_PORT}
+    timeout: 5000ms
+    password: ${KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD}
+  task:
+    scheduling:
+      enabled: true
+  vault:
+    scheme: http
+    host: 127.0.0.1
+    port: 8200
+    authentication: approle
+    app-role:
+      role-id: 08b83bd5-c1c5-f633-ece6-ce1df41a0452
+      secret-id: f3910b6b-e988-2b10-cab2-0929f9b6fc48
+
+vault:
+  transit:
+    key-name: mysql-app-data
+
+# Custom properties
+reencryption:
+  batch-size: 1000
+
+# JWT secret and expiration
+jwt:
+  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
+  expiration: ${KOJSTAR_TERMINAL_JWT_EXPIRATION}
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+
+cors:
+  allowed-origins: ${KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS}
+  allowed-methods: ${KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS}
+  allowed-headers: ${KOJSTAR_TERMINAL_CORS_ALLOWED_HEADERS}
+  max-age: ${KOJSTAR_TERMINAL_CORS_MAX_AGE}

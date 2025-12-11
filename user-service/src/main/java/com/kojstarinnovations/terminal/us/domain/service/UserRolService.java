@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserRolResponse;
 import com.kojstarinnovations.terminal.commons.exception.DuplicateException;
@@ -43,9 +44,7 @@ public class UserRolService implements UserRolUC {
     @Override
     public boolean existsById(UserRolIdRequest userRolIdRequest) {
         UserRolIDDTO userRolIdDto = new UserRolIDDTO(userRolIdRequest.getUserId(), userRolIdRequest.getRolId());
-        boolean exists = persistenceAdapter.existsById(userRolIdDto);
-
-        return exists;
+        return outputPort.existsById(userRolIdDto);
     }
 
     /**
@@ -57,13 +56,11 @@ public class UserRolService implements UserRolUC {
     @Override
     public UserRolResponse save(UserRolRequest request) {
         if (existsById(new UserRolIdRequest(request.getUserId(), request.getRolId()))) {
-            throw new DuplicateException("UserRol already exists");
+            throw new DuplicateException(I18nUserConstants.EXCEPTION_USER_ROL_ALREADY_EXISTS);
         }
         UserRolDTO dto = domainMapper.requestToDTO(request);
         dto = (UserRolDTO) attributeUSService.getAuditAttributesForSystem(dto); // Add audit attributes for system
-        dto = persistenceAdapter.save(dto);
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.save(dto);
     }
 
     /**
@@ -74,17 +71,17 @@ public class UserRolService implements UserRolUC {
     @Override
     public void deleteById(UserRolIdRequest id) {
         UserRolIDDTO userRolIdDto = new UserRolIDDTO(id.getUserId(), id.getRolId());
-        persistenceAdapter.deleteById(userRolIdDto);
+        outputPort.deleteById(userRolIdDto);
     }
 
     /**
-     * Deletes all user rols by user id
+     * Deletes all user roles by user id
      *
      * @param userId the user id
      */
     @Override
     public void deleteByUserId(String userId) {
-        persistenceAdapter.deleteByUserId(userId);
+        outputPort.deleteByUserId(userId);
     }
 
     /**
@@ -96,9 +93,8 @@ public class UserRolService implements UserRolUC {
     @Override
     public UserRolResponse getById(UserRolIdRequest ID) {
         UserRolIDDTO userRolIdDto = new UserRolIDDTO(ID.getUserId(), ID.getRolId());
-        Optional<UserRolDTO> optionalUserRolDto = persistenceAdapter.getById(userRolIdDto);
-
-        return domainMapper.dtoToResponse(optionalUserRolDto.orElseThrow(() -> new NotFoundException("UserRol not found")));
+        return outputPort.getById(userRolIdDto)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_ROL_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -109,12 +105,9 @@ public class UserRolService implements UserRolUC {
      */
     @Override
     public Page<UserRolResponse> getPage(Pageable pageable) {
-        Page<UserRolResponse> responses = Optional.of(persistenceAdapter.getPage(pageable))
+        return Optional.of(outputPort.getPage(pageable))
                 .filter(page -> !page.isEmpty())
-                .orElseThrow(() -> new NotFoundException("UserRol not found by pageable"))
-                .map(domainMapper::dtoToResponse);
-
-        return responses;
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_ROL_PAGE_NOT_FOUND));
     }
 
     /**
@@ -124,14 +117,9 @@ public class UserRolService implements UserRolUC {
      */
     @Override
     public List<UserRolResponse> getAll() {
-        List<UserRolResponse> responses = Optional.of(persistenceAdapter.getAll())
+        return Optional.of(outputPort.getAll())
                 .filter(list -> !list.isEmpty())
-                .orElseThrow(() -> new NotFoundException("UserRol not found"))
-                .stream()
-                .map(domainMapper::dtoToResponse)
-                .toList();
-
-        return responses;
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_ROL_ALL_NOT_FOUND));
     }
 
     /**
@@ -151,12 +139,10 @@ public class UserRolService implements UserRolUC {
         UserRolDTO dto = domainMapper.requestToDTO(request);
         dto.setStatus(Status.ACTIVE);
 
-        dto = persistenceAdapter.updateById(dto, new UserRolIDDTO(id.getUserId(), id.getRolId()));
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.updateById(dto, new UserRolIDDTO(id.getUserId(), id.getRolId()));
     }
 
     private final AuditAttributeUSService attributeUSService;
-    private final UserRolPA persistenceAdapter;
+    private final UserRolPA outputPort;
     private final UserRolDM domainMapper;
 }

@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.opextends;
 
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserAccessResponse;
 import com.kojstarinnovations.terminal.shared.ports.output.OutputPort;
 import com.kojstarinnovations.terminal.us.domain.model.UserAccessDTO;
 import com.kojstarinnovations.terminal.us.domain.model.UserAccessIDDTO;
@@ -9,7 +10,7 @@ import com.kojstarinnovations.terminal.us.domain.model.UserAccessIDDTO;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
-public interface UserAccessOP extends OutputPort<UserAccessDTO, UserAccessIDDTO> {
+public interface UserAccessOP extends OutputPort<UserAccessDTO, UserAccessResponse, UserAccessIDDTO> {
 
     /**
      * Delete User Access by User Id

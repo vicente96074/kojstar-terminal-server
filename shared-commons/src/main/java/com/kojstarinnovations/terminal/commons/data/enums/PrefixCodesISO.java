@@ -9,19 +9,17 @@ import lombok.Getter;
  */
 @Getter
 public enum PrefixCodesISO {
+    STORE_ID("KTR"),
+
     USER_ID("KOJ"),
     ACCESS_ID("AC"),
     ROLE_ID("RO"),
     IDENTIFICATION_ID("ID"),
     ADDRESS_ID("AD"),
-    CUSTOMER_ID("CU"),
-    TRANSACTION_ID("TR"),
     CONTACT_ID("CO"),
 
-    UST_TRANSACTION_ID("UST"),
-    USR_TRANSACTION_ID("USR"),
-    SAGA_ID("SAG"),
-    USER_SETTING_ID("USTG");
+    USR_TRANSACTION_ID("USR");
+
     private final String code;
 
     /**
