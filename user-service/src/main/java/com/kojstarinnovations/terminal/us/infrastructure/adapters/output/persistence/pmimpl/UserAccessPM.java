@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl;
 
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserAccessResponse;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.us.domain.model.UserAccessDTO;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class UserAccessPM implements PersistenceMapper<UserAccess, UserAccessDTO> {
+public class UserAccessPM implements PersistenceMapper<UserAccess, UserAccessDTO, UserAccessResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -36,6 +37,17 @@ public class UserAccessPM implements PersistenceMapper<UserAccess, UserAccessDTO
     @Override
     public UserAccessDTO entityToDTO(UserAccess entity) {
         return modelMapper.map(entity, UserAccessDTO.class);
+    }
+
+    /**
+     * Maps an entity to response
+     *
+     * @param userAccess persisted
+     * @return payload
+     */
+    @Override
+    public UserAccessResponse entityToResponse(UserAccess userAccess) {
+        return modelMapper.map(userAccess, UserAccessResponse.class);
     }
 
     private final ModelMapperCustomized modelMapper;

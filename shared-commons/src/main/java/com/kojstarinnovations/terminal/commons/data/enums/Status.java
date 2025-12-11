@@ -13,5 +13,6 @@ public enum Status {
     APPROVED,
     REJECTED,
     PENDING,
-    BLOCKED
+    BLOCKED,
+    DELETED
 }

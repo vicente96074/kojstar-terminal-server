@@ -4,7 +4,8 @@ import com.kojstarinnovations.terminal.auths.domain.opextends.ForgotPasswordOP;
 import com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.pmimpl.ForgotPasswordPM;
 import com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.repository.ForgotPasswordRepository;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.ForgotPasswordDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kojstarinnovations.terminal.commons.data.payload.authentication.ForgotPasswordResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,7 @@ import java.util.Optional;
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
 @Component
+@RequiredArgsConstructor
 public class ForgotPasswordPA implements ForgotPasswordOP {
 
     /**
@@ -27,8 +29,10 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
      * @return modelDto
      */
     @Override
-    public ForgotPasswordDTO save(ForgotPasswordDTO dto) {
-        return persistenceMapper.entityToDTO(repository.save(persistenceMapper.dtoToEntity(dto)));
+    public ForgotPasswordResponse save(ForgotPasswordDTO dto) {
+        return persistenceMapper.entityToResponse(
+                repository.save(persistenceMapper.dtoToEntity(dto))
+        );
     }
 
     /**
@@ -38,7 +42,7 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
      * @return modelDto with the given id
      */
     @Override
-    public Optional<ForgotPasswordDTO> getById(Long id) {
+    public Optional<ForgotPasswordResponse> getById(Long id) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -49,7 +53,7 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<ForgotPasswordDTO> getPage(Pageable pageable) {
+    public Page<ForgotPasswordResponse> getPage(Pageable pageable) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -59,7 +63,7 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
      * @return List<DTO>
      */
     @Override
-    public List<ForgotPasswordDTO> getAll() {
+    public List<ForgotPasswordResponse> getAll() {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -71,7 +75,7 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
      * @return modelDto updated
      */
     @Override
-    public ForgotPasswordDTO updateById(ForgotPasswordDTO dto, Long id) {
+    public ForgotPasswordResponse updateById(ForgotPasswordDTO dto, Long id) {
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
@@ -103,9 +107,9 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
      * @return modelDto with the given token
      */
     @Override
-    public Optional<ForgotPasswordDTO> findByToken(String token) {
+    public Optional<ForgotPasswordResponse> findByToken(String token) {
         return repository.findByToken(token)
-                .map(persistenceMapper::entityToDTO);
+                .map(persistenceMapper::entityToResponse);
     }
 
     /**
@@ -116,12 +120,6 @@ public class ForgotPasswordPA implements ForgotPasswordOP {
     @Override
     public void consumeToken(String token) {
         repository.consumeToken(token);
-    }
-
-    @Autowired
-    public ForgotPasswordPA(ForgotPasswordPM persistenceMapper, ForgotPasswordRepository repository) {
-        this.persistenceMapper = persistenceMapper;
-        this.repository = repository;
     }
 
     private final ForgotPasswordPM persistenceMapper;

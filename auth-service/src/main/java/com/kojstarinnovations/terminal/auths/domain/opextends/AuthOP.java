@@ -10,22 +10,5 @@ import java.util.Optional;
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
 public interface AuthOP {
-
-    /**
-     * Check if a user exists by username
-     *
-     * @param username - Username to be checked
-     * @return boolean - True if the user exists, false otherwise
-     */
-    boolean existsByUsername(String username);
-
-    /**
-     * Check if a user exists by email
-     *
-     * @param email - Email to be checked
-     * @return boolean - True if the user exists, false otherwise
-     */
-    boolean existsByEmail(String email);
-
     Optional<UserResponse> getByEmail(String email);
 }

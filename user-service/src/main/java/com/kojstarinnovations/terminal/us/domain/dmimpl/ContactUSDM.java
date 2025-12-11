@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.dmimpl;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.ContactUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.ContactType;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
@@ -32,11 +32,11 @@ public class ContactUSDM implements DomainMapper<ContactUSDTO, ContactUSRequest,
         if (request.getContactType().equals(ContactType.PHONE.name())) {
             CountryCodeISO.fromCode(request.getCountryCode())
                     .ifPresentOrElse(dto::setCountryCodeISO, () -> {
-                        throw new NotFoundException(ExceptionConstants.COUNTRY_CODE_NOT_FOUND);
+                        throw new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_COUNTRY_CODE_NOT_FOUND);
                     });
             RegionCodeISO.fromCode(request.getRegionCode())
                     .ifPresentOrElse(dto::setRegionCodeISO, () -> {
-                        throw new NotFoundException(ExceptionConstants.REGION_CODE_NOT_FOUND);
+                        throw new NotFoundException(I18nUserConstants.EXCEPTION_CONTACT_REGION_CODE_NOT_FOUND);
                     });
         }
         return dto;

@@ -1,3 +1,12 @@
+# Create Database
+```bash
+DROP DATABASE IF EXISTS kt_store;
+CREATE DATABASE IF NOT EXISTS kt_store;
+
+DROP DATABASE IF EXISTS kt_auth;
+CREATE DATABASE IF NOT EXISTS kt_auth;
+```
+
 # Edit environment variables
 
 To edit environment variables on your system, follow the instructions below based on your operating system:
@@ -17,7 +26,10 @@ export KOJSTAR_TERMINAL_SSL_KEY_ALIAS="your_ssl_key_alias"
 export KOJSTAR_TERMINAL_SSL_KEY_STORE="your_ssl_key_store_path"
 export KOJSTAR_TERMINAL_SSL_KEY_PASSWORD="your_ssl_key_password"
 export KOJSTAR_TERMINAL_SSL_KEY_PASSWORD="your_ssl_key_password"
+
 export KOJSTAR_TERMINAL_AUTH_SERVICE_DB_URL="your_database_url"
+export KOJSTAR_TERMINAL_OAUTH2_SERVICE_DB_URL="your_database_url"
+
 export KOJSTAR_TERMINAL_MYSQL_USERNAME="your_database_username"
 export KOJSTAR_TERMINAL_MYSQL_PASSWORD="your_database_password"
 export KOJSTAR_TERMINAL_TIME_ZONE="your_time_zone"
@@ -44,6 +56,17 @@ export KOJSTAR_TERMINAL_CORS_MAX_AGE="3600" # 1 hour
 
 export KOJSTAR_TERMINAL_VAULT_ROLE_ID="your_vault_role_id"
 export KOJSTAR_TERMINAL_VAULT_SECRET_ID="your_secret_id"
+
+export KOJSTAR_TERMINAL_GOOGLE_CLIENT_ID="your-google-client-id"
+export KOJSTAR_TERMINAL_GOOGLE_CLIENT_SECRET="your-google-client-secret"
+export KOJSTAR_TERMINAL_GOOGLE_REDIRECT_URI="your-redirect-uri"
+export KOJSTAR_TERMINAL_GITHUB_CLIENT_ID="your-google-client-id"
+export KOJSTAR_TERMINAL_GITHUB_CLIENT_SECRET="your-google-client-secret"
+export KOJSTAR_TERMINAL_GITHUB_REDIRECT_URI="your-redirect-uri"
+
+export KOJSTAR_TERMINAL_JWT_KEY_STORE="your-jwt-key-store"
+export KOJSTAR_TERMINAL_JWT_KEY_PASSWORD="your-jwt-key-password"
+export KOJSTAR_TERMINAL_JWT_SECRET="your-jwt-secret"
 ```
 
 - Save the file and exit the text editor.
@@ -81,15 +104,6 @@ ls -la /etc/kojstar-terminal/
 - Apply changes to systemd service files:
 
 ```bash
-# 1. Recargar systemd
-sudo systemctl daemon-reload
-
-# 2. Reiniciar el servicio
-sudo systemctl restart kt-user-service
-
-# 3. Ver el estado
-sudo systemctl status kt-user-service
-
 # 4. Ver logs en tiempo real
 sudo journalctl -u kt-user-service -f
 ```
@@ -103,12 +117,19 @@ sudo journalctl -u kt-user-service -f
   sudo nano /etc/systemd/system/kt-user-service.service
   # Add the content contained in kt-user-service.service file
   
+  sudo nano /etc/systemd/system/kt-oauth2-service.service
+  # Add the content contained int kt-oauth2-service.service file
+  
   sudo systemctl daemon-reload
   
   sudo systemctl start kt-auth-service
   sudo systemctl enable kt-auth-service
   sudo systemctl start kt-user-service
   sudo systemctl enable kt-user-service
+  sudo systemctl start kt-oauth2-service
+  sudo systemctl enable kt-oauth2-service
+  
+  sudo journalctl -u kt-user-service -f
 ```
 
 # 🚀 GUÍA DE CONFIGURACIÓN DE HASHICORP VAULT 🛠️

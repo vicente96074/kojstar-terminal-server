@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 @Slf4j
@@ -46,9 +45,6 @@ public class SecurityService {
         this.authentication = SecurityContextHolder.getContext().getAuthentication();
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
         Collection<? extends GrantedAuthority> authorities = principalUser.getAuthorities();
-
-        //log.info("Authorities: {}", authorities);
-        //log.info("Roles: {}", Arrays.stream(roles).toList());
 
         //Validate if the user has any of the roles
         for (GrantedAuthority grantedAuthority : authorities) {

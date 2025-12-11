@@ -7,14 +7,12 @@ import com.kojstarinnovations.terminal.shared.ports.output.OutputPort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 /**
  * UserOP
  *
  * @author BalamKiche
  */
-public interface UserOP extends OutputPort<UserDTO, String> {
+public interface UserOP extends OutputPort<UserDTO, UserResponse, String> {
 
     /**
      * existsByUsername
@@ -38,7 +36,7 @@ public interface UserOP extends OutputPort<UserDTO, String> {
      * @param pageable pageable
      * @return Page<UserDTO>
      */
-    Page<UserDTO> getPageUserActive(Pageable pageable);
+    Page<UserResponse> getPageUserActive(Pageable pageable);
 
     /**
      * updateSettingId
@@ -47,14 +45,6 @@ public interface UserOP extends OutputPort<UserDTO, String> {
      * @param userSettingId the setting id
      */
     void updateUserSettingId(String id, String userSettingId);
-
-    /**
-     * Get the user by id
-     *
-     * @param userId the user ID
-     * @return UserResponse the user
-     */
-    UserResponse getPayloadById(String userId);
 
     /**
      * Block user

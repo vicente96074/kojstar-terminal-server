@@ -1,0 +1,16 @@
+[Unit]
+Description=OAuth2 Service
+
+[Service]
+Restart=always
+RestartSec=10
+WorkingDirectory=/home/augusto/Documentos/Projects/kojstar-terminal-server/oauth2-service/target/
+ExecStart=/usr/bin/java -jar /home/augusto/Documentos/Projects/kojstar-terminal-server/oauth2-service/target/oauth2-service.jar
+
+EnvironmentFile=-/etc/kojstar-terminal/kt.env
+
+SuccessExitStatus=143
+
+
+[Install]
+WantedBy=multi-user.target

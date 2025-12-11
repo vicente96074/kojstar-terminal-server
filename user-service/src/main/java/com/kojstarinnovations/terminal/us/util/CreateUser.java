@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,10 +52,10 @@ public class CreateUser {
      */
     private UserRequest getUserRequest() {
         //Role
-        Set<String> roles = new HashSet<>();
+        List<String> roles = new ArrayList<>();
         roles.add("super_admin");
 
-        Set<String> accesses = new HashSet<>();
+        List<String> accesses = new ArrayList<>();
         accesses.add("administration");
         accesses.add("settings");
         accesses.add("twofactor");

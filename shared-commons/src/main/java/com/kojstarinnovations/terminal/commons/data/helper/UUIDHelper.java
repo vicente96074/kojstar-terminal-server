@@ -43,7 +43,7 @@ public class UUIDHelper {
      * @param length the length of the number
      * @return Integer
      */
-    public static int   generateRandomNumber(int length) {
+    public static int generateRandomNumber(int length) {
         if (length <= 0) {
             throw new IllegalArgumentException("Length must be positive");
         }
@@ -54,4 +54,6 @@ public class UUIDHelper {
         // Para length=6: min=100000, max=1000000
         return ThreadLocalRandom.current().nextInt(min, max);
     }
+
+    public static final String STORE_ID = "KTR";
 }

@@ -32,13 +32,13 @@ public class AddressRequest extends CommonsRequest {
     private String city;
 
     @DataRequired(message = ValidationConstants.SUBDIVISION_REGION_CODE_REQUIRED)
-    private String subdivisionRegionCode = SubdivisionRegionCodeISO.GT_QZ_QU.getCode(); // Default to Quezaltenango(Xela)
+    private String subdivisionRegionCode; // = SubdivisionRegionCodeISO.GT_QZ_QU.getCode(); // Default to Quezaltenango(Xela)
 
     @DataRequired(message = ValidationConstants.REGION_CODE_REQUIRED)
-    private String regionCode = RegionCodeISO.GT_QZ.getCode(); // Default to Quezaltenango
+    private String regionCode; // = RegionCodeISO.GT_QZ.getCode(); // Default to Quezaltenango
 
     @DataRequired(message = ValidationConstants.COUNTRY_CODE_ISO_REQUIRED)
-    private String countryCode = CountryCodeISO.GT.getCode(); // Default to Guatemala
+    private String countryCode; // = CountryCodeISO.GT.getCode(); // Default to Guatemala
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     private String postalCode;

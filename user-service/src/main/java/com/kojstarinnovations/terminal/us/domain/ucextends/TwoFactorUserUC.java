@@ -52,16 +52,7 @@ public interface TwoFactorUserUC extends UseCase<TwoFactorUserRequest, TwoFactor
      * @return true if the user has any phone number registered, false otherwise
      */
     boolean existPhoneBySub(String sub);
-
-    /**
-     * Check if the phone number already exists by sub
-     *
-     * @param sub             the id of the user
-     * @param fullPhoneNumber the full phone number to check
-     * @return true if the phone number already exists, false otherwise
-     */
-    boolean matchPhoneBySubAndCountryCode(String sub, String fullPhoneNumber, CountryCodeISO codeISO);
-
+    
     /**
      * Check if an email already exists by sub
      *

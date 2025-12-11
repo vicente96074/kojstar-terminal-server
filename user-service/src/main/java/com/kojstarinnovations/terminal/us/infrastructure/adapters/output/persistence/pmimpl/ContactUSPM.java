@@ -32,8 +32,8 @@ public class ContactUSPM implements PM<ContactUS, ContactUSDTO, ContactUSRespons
     @Override
     public ContactUSResponse entityToResponse(ContactUS entity) {
         ContactUSResponse response = mapper.map(entity, ContactUSResponse.class);
-        response.setCountryCode(entity.getCountryCodeISO().getCode());
-        response.setRegionCode(entity.getRegionCodeISO().getCode());
+        response.setCountryCode(entity.getCountryCodeISO() != null ? entity.getCountryCodeISO().getCode() : null);
+        response.setRegionCode(entity.getRegionCodeISO() != null ? entity.getRegionCodeISO().getCode() : null);
         return response;
     }
 

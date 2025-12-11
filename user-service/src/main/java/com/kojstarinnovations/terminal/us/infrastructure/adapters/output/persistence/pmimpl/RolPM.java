@@ -1,6 +1,7 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl;
 
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.RolDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.RolResponse;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.entity.Rol;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class RolPM implements PersistenceMapper<Rol, RolDTO> {
+public class RolPM implements PersistenceMapper<Rol, RolDTO, RolResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -36,6 +37,17 @@ public class RolPM implements PersistenceMapper<Rol, RolDTO> {
     @Override
     public RolDTO entityToDTO(Rol entity) {
         return modelMapper.map(entity, RolDTO.class);
+    }
+
+    /**
+     * Maps an entity to response
+     *
+     * @param entity persisted
+     * @return payload
+     */
+    @Override
+    public RolResponse entityToResponse(Rol entity) {
+        return modelMapper.map(entity, RolResponse.class);
     }
 
     private final ModelMapperCustomized modelMapper;

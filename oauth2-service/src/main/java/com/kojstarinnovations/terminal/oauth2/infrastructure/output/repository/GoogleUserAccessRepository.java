@@ -1,0 +1,10 @@
+package com.kojstarinnovations.terminal.oauth2.infrastructure.output.repository;
+
+import com.kojstarinnovations.terminal.oauth2.infrastructure.output.entity.GoogleUserAccess;
+import com.kojstarinnovations.terminal.oauth2.infrastructure.output.entity.UserAccessId;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface GoogleUserAccessRepository extends JpaRepository<GoogleUserAccess, UserAccessId> {
+}

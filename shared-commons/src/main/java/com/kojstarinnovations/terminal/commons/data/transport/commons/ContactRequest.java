@@ -21,12 +21,12 @@ public class ContactRequest extends CommonsRequest {
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.CONTACT_TYPE_REQUIRED)
-    private String contactType = ContactType.EMAIL.name();
+    private String contactType; // = ContactType.EMAIL.name();
 
     //Phone only
-    private String countryCode = CountryCodeISO.GT.getCode(); // Default to Guatemala (Map on manually)
-    private String regionCode = RegionCodeISO.GT_QZ.getCode(); // Default to Guatemala - Quetzaltenango (Map on manually)
-    private String phoneNumber;
+    private String countryCode; // = CountryCodeISO.GT.getCode(); // Default to Guatemala (Map on manually)
+    private String regionCode; // = RegionCodeISO.GT_QZ.getCode(); // Default to Guatemala - Quetzaltenango (Map on manually)
+    private String phoneNumber; //
 
     //Email only
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)

@@ -16,17 +16,11 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @Configuration
 public class ThymeleafTemplateConfig {
 
-    /**
-     * Define el MessageSource para que Spring use los archivos .properties.
-     * Este bean será inyectado en el TemplateEngine.
-     */
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        // Carga desde la ruta especificada. Coincide con tu aplicación.yml si usas la ruta 'i18n/reset-password'.
         messageSource.setBasename("i18n/reset-password");
         messageSource.setDefaultEncoding("UTF-8");
-        // CRÍTICO: Permite que Thymeleaf muestre la clave si no la encuentra, en lugar de fallar.
         messageSource.setUseCodeAsDefaultMessage(true);
         return messageSource;
     }
@@ -39,19 +33,14 @@ public class ThymeleafTemplateConfig {
         resolver.setCharacterEncoding("UTF-8");
         resolver.setOrder(1);
         resolver.setCheckExistence(true);
-        resolver.setCacheable(false); // Mantener desactivado para pruebas
+        resolver.setCacheable(false);
         return resolver;
     }
 
-    /**
-     * Configura el Template Engine de Thymeleaf.
-     * @param messageSource El bean MessageSource configurado arriba.
-     */
     @Bean
     public SpringTemplateEngine templateEngine(MessageSource messageSource) {
         SpringTemplateEngine templateEngine = new SpringTemplateEngine();
         templateEngine.setTemplateResolver(emailTemplateResolver());
-        // **CRÍTICO:** CONECTAR el MessageSource con el TemplateEngine.
         templateEngine.setTemplateEngineMessageSource(messageSource);
         return templateEngine;
     }

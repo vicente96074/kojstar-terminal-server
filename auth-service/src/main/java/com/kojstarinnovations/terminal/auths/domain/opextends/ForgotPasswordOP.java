@@ -1,6 +1,7 @@
 package com.kojstarinnovations.terminal.auths.domain.opextends;
 
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.ForgotPasswordDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.authentication.ForgotPasswordResponse;
 import com.kojstarinnovations.terminal.shared.ports.output.OutputPort;
 
 import java.util.Optional;
@@ -10,7 +11,7 @@ import java.util.Optional;
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
-public interface ForgotPasswordOP extends OutputPort<ForgotPasswordDTO, Long> {
+public interface ForgotPasswordOP extends OutputPort<ForgotPasswordDTO, ForgotPasswordResponse, Long> {
 
     /**
      * Method to find a modelDto by token
@@ -18,7 +19,7 @@ public interface ForgotPasswordOP extends OutputPort<ForgotPasswordDTO, Long> {
      * @param token the token to be searched
      * @return modelDto with the given token
      */
-    Optional<ForgotPasswordDTO> findByToken(String token);
+    Optional<ForgotPasswordResponse> findByToken(String token);
 
     /**
      * Method to consume a token

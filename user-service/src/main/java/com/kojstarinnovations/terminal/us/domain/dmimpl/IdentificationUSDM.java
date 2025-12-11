@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.dmimpl;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.IdentificationUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.IdentificationUSResponse;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 /**
- * IdentificationUSDM - Domain Mapper for IdentificationUS transport, dto and payload
+ * Identification - Domain Mapper for IdentificationUS transport, dto and payload
  *
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
@@ -31,7 +31,7 @@ public class IdentificationUSDM implements DomainMapper<IdentificationUSDTO, Ide
         IdentificationUSDTO dto = modelMapper.map(request, IdentificationUSDTO.class);
         CountryCodeISO.fromCode(request.getNationalityCode())
                 .ifPresentOrElse(dto::setNationality, () -> {
-                    throw new NotFoundException(ExceptionConstants.COUNTRY_CODE_NOT_FOUND);
+                    throw new NotFoundException(I18nUserConstants.EXCEPTION_IDENTIFICATION_COUNTRY_CODE_NOT_FOUND);
                 });
 
         return dto;

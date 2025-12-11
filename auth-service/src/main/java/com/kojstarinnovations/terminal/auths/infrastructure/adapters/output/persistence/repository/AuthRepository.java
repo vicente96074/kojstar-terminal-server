@@ -18,14 +18,6 @@ import java.util.Optional;
 public interface AuthRepository extends JpaRepository<User, String> {
 
     /**
-     * This method is used to find a user by its username
-     *
-     * @param username The username of the user
-     * @return An optional of the user
-     */
-    Optional<User> findByUsername(String username);
-
-    /**
      * This method is used to find a user by its username or email
      *
      * @param username the username of the user
@@ -34,22 +26,6 @@ public interface AuthRepository extends JpaRepository<User, String> {
      */
     @Query("SELECT u FROM users u WHERE u.username = :username OR u.email = :email")
     Optional<User> findByUsernameOrEmail(@Param("username") String username, @Param("email") String email);
-
-    /**
-     * This method is used to check if a user exists by its username
-     *
-     * @param username The username of the user
-     * @return A boolean value
-     */
-    boolean existsByUsername(String username);
-
-    /**
-     * This method is used to check if a user exists by its email
-     *
-     * @param email The email of the user
-     * @return A boolean value
-     */
-    boolean existsByEmail(String email);
 
     @Query("SELECT COUNT(u) > 0 FROM users u JOIN u.twoFactorUsers t WHERE u.id = :userId AND t.twoFactorActive = true")
     boolean hasAnyTwoFactorActive(@Param("userId") String userId);

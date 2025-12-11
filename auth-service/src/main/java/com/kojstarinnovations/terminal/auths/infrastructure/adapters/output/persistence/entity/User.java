@@ -8,6 +8,8 @@ import lombok.*;
 
 import java.util.List;
 
+import static com.kojstarinnovations.terminal.commons.data.constants.PersistenceConstants.AUTH_USERS_TABLE_NAME;
+
 /**
  * User Entity Class Definition - JPA to represent the user table in the database
  * The id is generated pre-persist and the username and email are unique.
@@ -20,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Entity(name = "users")
+@Entity(name = AUTH_USERS_TABLE_NAME)
 public class User {
 
     @Id
@@ -47,9 +49,6 @@ public class User {
 
     @Column(name = "store_id")
     private String storeId;
-
-    @Column(name = "user_setting_id")
-    private String userSettingId;
 
     @Column(name = "status", columnDefinition = "VARCHAR(12) DEFAULT 'PENDING'")
     @Convert(converter = StatusConverter.class)

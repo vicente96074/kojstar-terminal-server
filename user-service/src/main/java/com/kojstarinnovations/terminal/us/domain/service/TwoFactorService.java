@@ -1,15 +1,16 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
+import com.kojstarinnovations.terminal.us.domain.ucextends.TwoFactorUC;
 import com.warrenstrange.googleauth.GoogleAuthenticator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TwoFactorService {
-
-    private final GoogleAuthenticator gAuth = new GoogleAuthenticator();
+@RequiredArgsConstructor
+public class TwoFactorService implements TwoFactorUC {
 
     public String generateSecretKey() {
-        return gAuth.createCredentials().getKey();
+        return googleAuthenticator.createCredentials().getKey();
     }
 
     public String getOtpAuthURL(String issuer, String accountName, String secret) {
@@ -23,6 +24,8 @@ public class TwoFactorService {
     }
 
     public boolean isCodeInvalid(String twoFactorSecret, int code) {
-        return !gAuth.authorize(twoFactorSecret, code);
+        return !googleAuthenticator.authorize(twoFactorSecret, code);
     }
+
+    private final GoogleAuthenticator googleAuthenticator;
 }

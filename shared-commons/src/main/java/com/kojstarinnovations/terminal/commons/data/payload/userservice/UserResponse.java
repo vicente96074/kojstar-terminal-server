@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 /**
  * UserResponse - Payload for User with Audit Attributes
@@ -34,9 +33,10 @@ public class UserResponse extends BasicAuditResponse {
     private String storeId;
 
     private String userSettingId;
+    private Boolean hasAnyTwoFactorActive;
 
-    private Set<RolResponse> rolResponses;
-    private Set<AccessResponse> accessResponses;
+    private List<RolResponse> rolResponses;
+    private List<AccessResponse> accessResponses;
     private List<IdentificationUSResponse> identificationUSResponses;
     private List<ContactUSResponse> contactUSResponses;
     private List<AddressUSResponse> addressUSResponses;

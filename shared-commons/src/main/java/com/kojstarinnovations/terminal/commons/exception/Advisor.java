@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.commons.exception;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.ExceptionType;
 import com.kojstarinnovations.terminal.commons.exception.response.ExceptionResponse;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.io.IOException;
 import java.lang.IllegalAccessException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -426,6 +428,40 @@ public class Advisor extends ResponseEntityExceptionHandler {
                         .details(ex.getMessage())
                         .build(),
                 HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public final ResponseEntity<ExceptionResponse> handleUnauthorizedException(UnauthorizedException ex) {
+        return new ResponseEntity<>(
+                ExceptionResponse.builder()
+                        .date(LocalDateTime.now())
+                        .type(ExceptionType.CRITICAL_SECURITY)
+                        .details(ex.getMessage())
+                        .build(),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(VaultException.class)
+    public final ResponseEntity<ExceptionResponse> handleVaultException(VaultException ex) {
+        return new ResponseEntity<>(
+                ExceptionResponse.builder()
+                        .date(LocalDateTime.now())
+                        .type(ExceptionType.VAULT)
+                        .details(ex.getMessage())
+                        .build()
+                , HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public final ResponseEntity<ExceptionResponse> handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex) {
+        return new ResponseEntity<>(
+                ExceptionResponse.builder()
+                        .date(LocalDateTime.now())
+                        .type(ExceptionType.SQL_EXCEPTION)
+                        .details(I18nCommonConstants.EXCEPTION_SQL_CONSTRAINT_VIOLATION)
+                        .build(),
+                HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**

@@ -1,0 +1,106 @@
+# Server configuration (Static port number)
+server:
+  port: 9000
+  servlet:
+    session:
+      cookie:
+        name: SESSION
+        http-only: true
+        secure: true
+        same-site: lax
+  ssl:
+    enabled: false
+    key-alias: ${KOJSTAR_TERMINAL_SSL_KEY_ALIAS}
+    key-store: file:${KOJSTAR_TERMINAL_SSL_KEY_STORE}
+    key-store-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+    key-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+    key-store-type: PKCS12
+  host-issuer: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}
+
+# Spring application configuration
+spring:
+  application:
+    name: oauth2-service
+  datasource:
+    url: ${KOJSTAR_TERMINAL_OAUTH2_SERVICE_DB_URL}
+    username: ${KOJSTAR_TERMINAL_MYSQL_USERNAME}
+    password: ${KOJSTAR_TERMINAL_MYSQL_PASSWORD}
+  jpa:
+    packages-to-scan:
+      - com.kojstarinnovations.kojnexus.oauth2.infrastructure.output.entity
+      - com.kojstarinnovations.kojnexus.shared.entity
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: update
+    generate-ddl: false
+    show-sql: false
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${KOJSTAR_TERMINAL_GOOGLE_CLIENT_ID}
+            client-secret: ${KOJSTAR_TERMINAL_GOOGLE_CLIENT_SECRET}
+            scope: openid,profile,email
+            redirect-uri: ${KOJSTAR_TERMINAL_GOOGLE_REDIRECT_URI}
+            client-name: kojnexus-google
+            authorization-grant-type: authorization_code
+          github:
+            client-id: ${KOJSTAR_TERMINAL_GITHUB_CLIENT_ID}
+            client-secret: ${KOJSTAR_TERMINAL_GITHUB_CLIENT_SECRET}
+            scope: user:email,read:user
+            redirect-uri: ${KOJSTAR_TERMINAL_GITHUB_REDIRECT_URI}
+            client-name: kojnexus-github
+            authorization-grant-type: authorization_code
+        provider:
+          google:
+            issuer-uri: https://accounts.google.com
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+          github:
+            authorization-uri: https://github.com/login/oauth/authorize
+            token-uri: https://github.com/login/oauth/access_token
+            user-info-uri: https://api.github.com/user
+            user-name-attribute: login
+      resourceserver:
+        jwt:
+          issuer-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}
+  redis:
+    host: ${KOJSTAR_TERMINAL_SPRING_REDIS_HOST}  # Usa el nombre del servicio Docker
+    port: ${KOJSTAR_TERMINAL_SPRING_REDIS_PORT}
+    timeout: 5000ms
+    password: ${KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD}
+  cloud:
+    vault:
+      scheme: http
+      host: 127.0.0.1
+      port: 8200
+      authentication: APPROLE
+      app-role:
+        role-id: ${KOJSTAR_TERMINAL_VAULT_ROLE_ID}
+        secret-id: ${KOJSTAR_TERMINAL_VAULT_SECRET_ID}
+        app-role-path: approle
+      connection-timeout: 15000
+      fail-fast: true
+
+jwt:
+  key:
+    keystore-location: file:${KOJSTAR_TERMINAL_JWT_KEY_STORE}
+    keystore-password: ${KOJSTAR_TERMINAL_JWT_KEY_PASSWORD}
+    key-alias: jwt-key
+    key-password: ${KOJSTAR_TERMINAL_JWT_KEY_PASSWORD}
+  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+
+cors:
+  allowed-origins: ${KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS}

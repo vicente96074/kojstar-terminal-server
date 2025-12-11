@@ -2,6 +2,7 @@ package com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.per
 
 import com.kojstarinnovations.terminal.auths.infrastructure.adapters.output.persistence.entity.ForgotPassword;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.ForgotPasswordDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.authentication.ForgotPasswordResponse;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class ForgotPasswordPM implements PersistenceMapper<ForgotPassword, ForgotPasswordDTO> {
+public class ForgotPasswordPM implements PersistenceMapper<ForgotPassword, ForgotPasswordDTO, ForgotPasswordResponse> {
 
     /**
      * The method dtoToEntity
@@ -37,6 +38,18 @@ public class ForgotPasswordPM implements PersistenceMapper<ForgotPassword, Forgo
     public ForgotPasswordDTO entityToDTO(ForgotPassword entity) {
         return modelMapper.map(entity, ForgotPasswordDTO.class);
     }
+
+    /**
+     * Maps an entity to response
+     *
+     * @param entity persisted
+     * @return payload
+     */
+    @Override
+    public ForgotPasswordResponse entityToResponse(ForgotPassword entity) {
+        return modelMapper.map(entity, ForgotPasswordResponse.class);
+    }
+
 
     private final ModelMapperCustomized modelMapper;
 }

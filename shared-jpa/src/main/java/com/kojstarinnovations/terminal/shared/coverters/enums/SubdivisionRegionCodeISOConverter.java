@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.shared.coverters.enums;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.SubdivisionRegionCodeISO;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import jakarta.persistence.AttributeConverter;
@@ -17,6 +17,6 @@ public class SubdivisionRegionCodeISOConverter implements AttributeConverter<Sub
     @Override
     public SubdivisionRegionCodeISO convertToEntityAttribute(String dbData) {
         return SubdivisionRegionCodeISO.fromCode(dbData)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.SUBDIVISION_REGION_CODE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(I18nCommonConstants.EXCEPTION_SUBDIVISION_REGION_CODE_NOT_FOUND));
     }
 }

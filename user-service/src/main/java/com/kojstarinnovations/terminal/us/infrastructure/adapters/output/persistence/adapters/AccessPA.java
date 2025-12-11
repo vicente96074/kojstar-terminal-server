@@ -1,7 +1,9 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AccessDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.AccessName;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.AccessResponse;
 import com.kojstarinnovations.terminal.us.domain.opextends.AccessOP;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl.AccessPM;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.repository.AccessRepository;
@@ -29,10 +31,10 @@ public class AccessPA implements AccessOP {
      * @return modelDto
      */
     @Override
-    public AccessDTO save(AccessDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public AccessResponse save(AccessDTO dto) {
+        return mapper.entityToResponse(
                 repository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -44,9 +46,9 @@ public class AccessPA implements AccessOP {
      * @return modelDto with the given id
      */
     @Override
-    public Optional<AccessDTO> getById(String id) {
+    public Optional<AccessResponse> getById(String id) {
         return repository.findById(id)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -56,9 +58,9 @@ public class AccessPA implements AccessOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<AccessDTO> getPage(Pageable pageable) {
+    public Page<AccessResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -67,10 +69,10 @@ public class AccessPA implements AccessOP {
      * @return List<DTO>
      */
     @Override
-    public List<AccessDTO> getAll() {
+    public List<AccessResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTO)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -82,8 +84,8 @@ public class AccessPA implements AccessOP {
      * @return modelDto updated
      */
     @Override
-    public AccessDTO updateById(AccessDTO dto, String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public AccessResponse updateById(AccessDTO dto, String id) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -93,7 +95,7 @@ public class AccessPA implements AccessOP {
      */
     @Override
     public void deleteById(String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -114,9 +116,9 @@ public class AccessPA implements AccessOP {
      * @return Access DTO
      */
     @Override
-    public Optional<AccessDTO> getByAccessName(AccessName accessName) {
+    public Optional<AccessResponse> getByAccessName(AccessName accessName) {
         return repository.findByAccessName(accessName)
-                .map(persistenceMapper::entityToDTO);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -131,5 +133,5 @@ public class AccessPA implements AccessOP {
     }
 
     private final AccessRepository repository;
-    private final AccessPM persistenceMapper;
+    private final AccessPM mapper;
 }

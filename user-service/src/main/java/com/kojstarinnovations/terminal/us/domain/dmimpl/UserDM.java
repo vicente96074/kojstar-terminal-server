@@ -47,7 +47,7 @@ public class UserDM implements DomainMapper<UserDTO, UserRequest, UserResponse> 
             response.setRolResponses(
                     dto.getRolDTOs().stream()
                             .map(rolDTO -> modelMapper.map(rolDTO, RolResponse.class))
-                            .collect(Collectors.toSet())
+                            .toList()
             );
         }
 
@@ -55,14 +55,14 @@ public class UserDM implements DomainMapper<UserDTO, UserRequest, UserResponse> 
             response.setAccessResponses(
                     dto.getAccessDTOs().stream()
                             .map(accessDTO -> modelMapper.map(accessDTO, AccessResponse.class))
-                            .collect(Collectors.toSet())
+                            .toList()
             );
         }
 
         if (dto.getIdentificationUSDTOs() != null && !dto.getIdentificationUSDTOs().isEmpty()) {
             response.setIdentificationUSResponses(
                     dto.getIdentificationUSDTOs().stream()
-                            .map(idUSDTO -> modelMapper.map(idUSDTO, IdentificationUSResponse.class))
+                            .map(identification -> modelMapper.map(identification, IdentificationUSResponse.class))
                             .collect(Collectors.toList())
             );
         }

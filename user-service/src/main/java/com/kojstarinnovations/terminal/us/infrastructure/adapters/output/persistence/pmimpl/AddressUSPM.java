@@ -1,6 +1,7 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl;
 
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AddressUSDTO;
+import com.kojstarinnovations.terminal.commons.data.payload.userservice.AddressUSResponse;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.entity.AddressUS;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class AddressUSPM implements PersistenceMapper<AddressUS, AddressUSDTO> {
+public class AddressUSPM implements PersistenceMapper<AddressUS, AddressUSDTO, AddressUSResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -36,6 +37,17 @@ public class AddressUSPM implements PersistenceMapper<AddressUS, AddressUSDTO> {
     @Override
     public AddressUSDTO entityToDTO(AddressUS entity) {
         return modelMapper.map(entity, AddressUSDTO.class);
+    }
+
+    /**
+     * Maps an entity to response
+     *
+     * @param entity persisted
+     * @return payload
+     */
+    @Override
+    public AddressUSResponse entityToResponse(AddressUS entity) {
+        return modelMapper.map(entity, AddressUSResponse.class);
     }
 
     private final ModelMapperCustomized modelMapper;

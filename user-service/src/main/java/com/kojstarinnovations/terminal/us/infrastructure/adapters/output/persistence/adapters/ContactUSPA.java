@@ -27,8 +27,8 @@ public class ContactUSPA implements ContactUSOP {
      */
     @Override
     public ContactUSResponse save(ContactUSDTO dto) {
-        return persistenceMapper.entityToResponse(
-                repository.save(persistenceMapper.dtoToEntity(dto))
+        return mapper.entityToResponse(
+                repository.save(mapper.dtoToEntity(dto))
         );
     }
 
@@ -41,7 +41,7 @@ public class ContactUSPA implements ContactUSOP {
     @Override
     public Optional<ContactUSResponse> getById(String id) {
         return repository.findById(id)
-                .map(persistenceMapper::entityToResponse);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -53,7 +53,7 @@ public class ContactUSPA implements ContactUSOP {
     @Override
     public Page<ContactUSResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToResponse);
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ContactUSPA implements ContactUSOP {
     public List<ContactUSResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToResponse)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -147,7 +147,7 @@ public class ContactUSPA implements ContactUSOP {
     public List<ContactUSResponse> getAllActivePhonesBySub(String sub) {
         return repository.findAllActivePhonesByUserId(sub)
                 .stream()
-                .map(persistenceMapper::entityToResponse)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -176,17 +176,6 @@ public class ContactUSPA implements ContactUSOP {
         return repository.existsEmailByUserId(email, sub);
     }
 
-    /**
-     * Validate if any phone number already exists by sub
-     *
-     * @param sub the sub of the user
-     * @return true if any phone number exists, false otherwise
-     */
-    @Override
-    public boolean existsPhoneBySub(String sub) {
-        return repository.existsPhoneByUserId(sub);
-    }
-
     private final ContactUSRepository repository;
-    private final ContactUSPM persistenceMapper;
+    private final ContactUSPM mapper;
 }

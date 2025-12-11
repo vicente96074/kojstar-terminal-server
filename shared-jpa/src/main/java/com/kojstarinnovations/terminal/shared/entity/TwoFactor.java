@@ -27,9 +27,6 @@ public class TwoFactor {
     @Column(name = "two_factor_active")
     private Boolean twoFactorActive;
 
-    @Column(name = "two_factor_phone")
-    private String twoFactorPhone; // SMS
-
     @Column(name = "country_code")
     @Convert(converter = CountryCodeISOConverter.class)
     private CountryCodeISO twoFactorCountryCode;

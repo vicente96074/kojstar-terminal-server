@@ -5,25 +5,25 @@ import jakarta.persistence.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * Conversor JPA que cifra/descifra automáticamente los campos de la base de datos
+ * JPA converter that automatically encrypts/decrypts database fields
  * <p>
- * Uso en entidades:
+ * Usage in entities:
  *
  * @Convert(converter = EncryptionConverter.class)
- * private String campoSensible;
+ * private String sensitiveField;
  */
 @Converter
 @Component
 public class EncryptionConverter implements AttributeConverter<String, String> {
 
     private VaultEncryptionService getService() {
-        // Llama estáticamente a la referencia del contexto para obtener el bean
+        // Statically calls the context reference to obtain the bean
         return SpringContext.getBean(VaultEncryptionService.class);
     }
 
     /**
-     * Convierte el valor de la entidad (plaintext) a valor de base de datos (ciphertext)
-     * Se ejecuta antes de INSERT/UPDATE
+     * Converts the entity value (plaintext) to a database value (ciphertext)
+     * Executes before INSERT/UPDATE
      */
     @Override
     public String convertToDatabaseColumn(String attribute) {
@@ -31,7 +31,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
             return null;
         }
 
-        // Si ya está cifrado, no cifrar de nuevo
+        // If it's already encrypted, don't encrypt again
         if (attribute.startsWith("vault:")) {
             return attribute;
         }
@@ -40,8 +40,8 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
     }
 
     /**
-     * Convierte el valor de la base de datos (ciphertext) a valor de la entidad (plaintext)
-     * Se ejecuta después de SELECT
+     * Converts the database value (ciphertext) to the entity value (plaintext)
+     * Executes after SELECT
      */
     @Override
     public String convertToEntityAttribute(String dbData) {
@@ -49,7 +49,7 @@ public class EncryptionConverter implements AttributeConverter<String, String> {
             return null;
         }
 
-        // Si no está cifrado, retornar tal cual (para migración gradual)
+        // If it's not encrypted, return as is (for gradual migration)
         if (!dbData.startsWith("vault:")) {
             return dbData;
         }

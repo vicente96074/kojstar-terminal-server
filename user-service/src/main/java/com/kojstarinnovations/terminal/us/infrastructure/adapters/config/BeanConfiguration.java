@@ -1,7 +1,7 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.config;
 
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
-import org.springframework.context.ApplicationEventPublisher;
+import com.warrenstrange.googleauth.GoogleAuthenticator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,5 +47,10 @@ public class BeanConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public GoogleAuthenticator googleAuthenticator() {
+        return new GoogleAuthenticator();
     }
 }

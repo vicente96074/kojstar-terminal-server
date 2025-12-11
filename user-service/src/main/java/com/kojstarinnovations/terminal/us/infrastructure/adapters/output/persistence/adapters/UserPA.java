@@ -1,10 +1,9 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.UserDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
-import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import com.kojstarinnovations.terminal.us.domain.opextends.UserOP;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.pmimpl.UserPM;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.repository.UserRepository;
@@ -43,10 +42,10 @@ public class UserPA implements UserOP {
      * @return UserDTO the saved user
      */
     @Override
-    public UserDTO save(UserDTO dto) {
-        return persistenceMapper.entityToDTO(
+    public UserResponse save(UserDTO dto) {
+        return mapper.entityToResponse(
                 repository.save(
-                        persistenceMapper.dtoToEntity(dto)
+                        mapper.dtoToEntity(dto)
                 )
         );
     }
@@ -58,9 +57,9 @@ public class UserPA implements UserOP {
      * @return Optional<UserDTO> the user retrieved
      */
     @Override
-    public Optional<UserDTO> getById(String id) {
+    public Optional<UserResponse> getById(String id) {
         return repository.findById(id)
-                .map(persistenceMapper::entityToDTOWithAccessAndRoles);
+                .map(mapper::entityToResponseWithAccessAndRoles);
     }
 
     /**
@@ -70,9 +69,9 @@ public class UserPA implements UserOP {
      * @return Page<DTO>
      */
     @Override
-    public Page<UserDTO> getPage(Pageable pageable) {
+    public Page<UserResponse> getPage(Pageable pageable) {
         return repository.findAll(pageable)
-                .map(persistenceMapper::entityToDTOWithAccessAndRoles);
+                .map(mapper::entityToResponseWithAccessAndRoles);
     }
 
     /**
@@ -81,10 +80,10 @@ public class UserPA implements UserOP {
      * @return List<DTO>
      */
     @Override
-    public List<UserDTO> getAll() {
+    public List<UserResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(persistenceMapper::entityToDTOWithAccessAndRoles)
+                .map(mapper::entityToResponseWithAccessAndRoles)
                 .toList();
     }
 
@@ -96,8 +95,8 @@ public class UserPA implements UserOP {
      * @return UserDTO the updated user
      */
     @Override
-    public UserDTO updateById(UserDTO dto, String id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public UserResponse updateById(UserDTO dto, String id) {
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -107,7 +106,7 @@ public class UserPA implements UserOP {
      */
     @Override
     public void deleteById(String s) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -139,9 +138,9 @@ public class UserPA implements UserOP {
      * @return Page<UserDTO> the page of active users
      */
     @Override
-    public Page<UserDTO> getPageUserActive(Pageable pageable) {
+    public Page<UserResponse> getPageUserActive(Pageable pageable) {
         return repository.getFindByStatus(Status.ACTIVE, pageable)
-                .map(persistenceMapper::entityToDTOWithAccessAndRoles);
+                .map(mapper::entityToResponseWithAccessAndRoles);
     }
 
     /**
@@ -153,19 +152,6 @@ public class UserPA implements UserOP {
     @Override
     public void updateUserSettingId(String id, String userSettingId) {
         repository.updateUserSettingId(id, userSettingId);
-    }
-
-    /**
-     * Get the user by id
-     *
-     * @param userId the user ID
-     * @return UserResponse the user
-     */
-    @Override
-    public UserResponse getPayloadById(String userId) {
-        return repository.findById(userId)
-                .map(persistenceMapper::entityToUserResponse)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.USER_NOT_FOUND));
     }
 
     /**
@@ -189,6 +175,6 @@ public class UserPA implements UserOP {
         return repository.findStatusById(userId);
     }
 
-    private final UserPM persistenceMapper;
+    private final UserPM mapper;
     private final UserRepository repository;
 }

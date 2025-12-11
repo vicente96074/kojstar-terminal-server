@@ -33,18 +33,7 @@ public class UserAccessService {
         UserAccessDTO dto = domainMapper.requestToDTO(request);
         dto = (UserAccessDTO) auditAttributeUSService.getAuditAttributesForSystem(dto); // Add audit attributes for system
 
-        dto = outputPort.save(dto);
-
-        return domainMapper.dtoToResponse(dto);
-    }
-
-    /**
-     * Delete entity by id
-     *
-     * @param userId the id of the entity to be deleted
-     */
-    public void deleteByUserId(String userId) {
-        outputPort.deleteByUserId(userId);
+        return outputPort.save(dto);
     }
 
     private final AuditAttributeUSService auditAttributeUSService;

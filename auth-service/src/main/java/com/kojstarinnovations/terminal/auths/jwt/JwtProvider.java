@@ -72,7 +72,7 @@ public class JwtProvider implements JwtService {
                 .claim("provider", "kojnexus")
                 .claim(String.valueOf(Methods.AUTHENTICATION_METHOD).toLowerCase(), AuthenticationMethod.CUSTOM.name().toLowerCase())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + 1 * 60L * 1000L)) // Expire in 1 minutes
+                .setExpiration(new Date(new Date().getTime() + (60L * 1000L))) // Expire in 1 minutes
                 .signWith(getSecret(secret)).compact();
     }
 
@@ -84,7 +84,13 @@ public class JwtProvider implements JwtService {
      * @return String claim
      */
     public String getClaimFromToken(String token, String claim) {
-        return Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(token).getBody().get(claim, String.class);
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(getSecret(secret))
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get(claim, String.class);
     }
 
     /**
@@ -102,46 +108,8 @@ public class JwtProvider implements JwtService {
                 .signWith(getSecret(secret)).compact();
     }
 
-    /**
-     * Get username from token
-     *
-     * @param token String token
-     * @return String username
-     */
-    @Override
-    public String getUsernameFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(token).getBody().getSubject();
-    }
-
-    /**
-     * Method to validate token
-     *
-     * @param token String token
-     * @return boolean
-     */
-    @Override
-    public boolean validateToken(String token) {
-        try {
-            Logger.getLogger("Validando token").info("Token: " + token);
-            Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(token);
-            return true;
-        } catch (MalformedJwtException ex) {
-            Logger.getLogger("Malformed JWT Token").log(Level.SEVERE, "Token mal formado {}", ex.getMessage());
-        } catch (UnsupportedJwtException ex) {
-            Logger.getLogger("Unsupported JWT Token").log(Level.SEVERE, "Token no soportado {}", ex.getMessage());
-        } catch (ExpiredJwtException ex) {
-            Logger.getLogger("Expired JWT Token").log(Level.SEVERE, "Token expirado {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger("JWT claims vacío").log(Level.SEVERE, "JWT claims vacío {}", ex.getMessage());
-        } catch (SignatureException ex) {
-            Logger.getLogger("JWT signature fail").log(Level.SEVERE, "JWT signature fallo {}", ex.getMessage());
-        }
-
-        return false;
-    }
-
     @SneakyThrows
-    public boolean validateRefreshToken(String refreshToken) {
+    public boolean validRefreshToken(String refreshToken) {
         try {
             Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(refreshToken);
             return true;

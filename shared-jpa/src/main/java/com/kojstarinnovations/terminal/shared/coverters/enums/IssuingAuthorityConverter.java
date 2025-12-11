@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.shared.coverters.enums;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.IssuingAuthority;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import jakarta.persistence.AttributeConverter;
@@ -38,6 +38,6 @@ public class IssuingAuthorityConverter implements AttributeConverter<IssuingAuth
     @Override
     public IssuingAuthority convertToEntityAttribute(String dbData) {
         return IssuingAuthority.fromCode(dbData)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.ISSUING_AUTHORITY_CODE_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(I18nCommonConstants.EXCEPTION_ISSUING_AUTHORITY_CODE_NOT_FOUND));
     }
 }

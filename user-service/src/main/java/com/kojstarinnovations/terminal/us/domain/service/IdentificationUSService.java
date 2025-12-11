@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.IdentificationUSDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.IdentificationType;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
@@ -54,9 +55,7 @@ public class IdentificationUSService implements IdentificationUSUC {
         IdentificationUSDTO dto = domainMapper.requestToDTO(request);
         dto.setId(null);
         dto.setStatus(Status.ACTIVE);
-        dto = outputPort.save(dto);
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.save(dto);
     }
 
     /**
@@ -88,10 +87,8 @@ public class IdentificationUSService implements IdentificationUSUC {
      */
     @Override
     public IdentificationUSResponse getById(String id) {
-        IdentificationUSDTO dto = outputPort.getById(id)
-                .orElseThrow(() -> new NotFoundException("Identification not found by ID"));
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.getById(id)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_IDENTIFICATION_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -102,12 +99,9 @@ public class IdentificationUSService implements IdentificationUSUC {
      */
     @Override
     public Page<IdentificationUSResponse> getPage(Pageable pageable) {
-        Page<IdentificationUSResponse> responses = Optional.of(outputPort.getPage(pageable))
+        return Optional.of(outputPort.getPage(pageable))
                 .filter(page -> !page.isEmpty())
-                .orElseThrow(() -> new NotFoundException("Identification not found by pageable"))
-                .map(domainMapper::dtoToResponse);
-
-        return responses;
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_IDENTIFICATION_PAGE_NOT_FOUND));
     }
 
     /**
@@ -117,14 +111,9 @@ public class IdentificationUSService implements IdentificationUSUC {
      */
     @Override
     public List<IdentificationUSResponse> getAll() {
-        List<IdentificationUSResponse> responses = Optional.of(outputPort.getAll())
+        return Optional.of(outputPort.getAll())
                 .filter(list -> !list.isEmpty())
-                .orElseThrow(() -> new NotFoundException("Identification not found"))
-                .stream()
-                .map(domainMapper::dtoToResponse)
-                .toList();
-
-        return responses;
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_IDENTIFICATION_ALL_NOT_FOUND));
     }
 
     /**
@@ -137,9 +126,7 @@ public class IdentificationUSService implements IdentificationUSUC {
     @Override
     public IdentificationUSResponse updateById(IdentificationUSRequest request, String id) {
         IdentificationUSDTO dto = domainMapper.requestToDTO(request);
-        dto = outputPort.updateById(dto, id);
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.updateById(dto, id);
     }
 
     /**

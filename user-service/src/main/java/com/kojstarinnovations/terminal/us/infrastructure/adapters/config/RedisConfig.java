@@ -22,11 +22,10 @@ public class RedisConfig {
             @Value("${spring.redis.password}") String password) {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
 
-        // Añadir esta línea para configurar la contraseña
         config.setPassword(RedisPassword.of(password));
 
         LettuceConnectionFactory factory = new LettuceConnectionFactory(config);
-        factory.afterPropertiesSet(); // Inicializa la conexión
+        factory.afterPropertiesSet();
 
         return factory;
     }
@@ -38,7 +37,7 @@ public class RedisConfig {
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new StringRedisSerializer());
         template.setEnableTransactionSupport(true);
-        template.afterPropertiesSet(); // Inicializa el template
+        template.afterPropertiesSet();
         return template;
     }
 }

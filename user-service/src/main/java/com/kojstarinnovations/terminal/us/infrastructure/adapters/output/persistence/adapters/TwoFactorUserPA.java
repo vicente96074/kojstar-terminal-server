@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.adapters;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.TwoFactorUserDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.TwoFactorType;
 import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
@@ -27,7 +28,9 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
      */
     @Override
     public TwoFactorUserResponse save(TwoFactorUserDTO dto) {
-        return pm.entityToResponse(repository.save(pm.dtoToEntity(dto)));
+        return mapper.entityToResponse(
+                repository.save(mapper.dtoToEntity(dto))
+        );
     }
 
     /**
@@ -38,7 +41,8 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
      */
     @Override
     public Optional<TwoFactorUserResponse> getById(String s) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return repository.findById(s)
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -49,7 +53,8 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
      */
     @Override
     public Page<TwoFactorUserResponse> getPage(Pageable pageable) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return repository.findAll(pageable)
+                .map(mapper::entityToResponse);
     }
 
     /**
@@ -59,7 +64,10 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
      */
     @Override
     public List<TwoFactorUserResponse> getAll() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return repository.findAll()
+                .stream()
+                .map(mapper::entityToResponse)
+                .toList();
     }
 
     /**
@@ -71,7 +79,9 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
      */
     @Override
     public TwoFactorUserResponse updateById(TwoFactorUserDTO dto, String id) {
-        return pm.entityToResponse(repository.save(pm.dtoToEntity(dto)));
+        return mapper.entityToResponse(
+                repository.save(mapper.dtoToEntity(dto))
+        );
     }
 
     /**
@@ -81,7 +91,7 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
      */
     @Override
     public void deleteById(String id) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException(I18nCommonConstants.EXCEPTION_NOT_IMPLEMENTED_YET);
     }
 
     /**
@@ -159,18 +169,6 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
     }
 
     /**
-     * Check if the phone number already exists by sub
-     *
-     * @param sub             the id of the user
-     * @param fullPhoneNumber the full phone number to check
-     * @return true if the phone number already exists, false otherwise
-     */
-    @Override
-    public boolean matchPhoneBySub(String sub, String fullPhoneNumber, CountryCodeISO codeISO) {
-        return repository.matchPhoneByUserId(sub, fullPhoneNumber, codeISO);
-    }
-
-    /**
      * Check if an email already exists by sub
      *
      * @param sub the id of the user
@@ -213,7 +211,7 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
     public List<TwoFactorUserResponse> getAllTwoFactorBySub(String sub) {
         return repository.getAllTwoFactorByUserId(sub)
                 .stream()
-                .map(pm::entityToResponse)
+                .map(mapper::entityToResponse)
                 .toList();
     }
 
@@ -227,9 +225,9 @@ public class TwoFactorUserPA implements TwoFactorUserOP {
     @Override
     public Optional<TwoFactorUserResponse> get2FABySubAndType(String sub, TwoFactorType twoFactorType) {
         return repository.get2FAByUserIdAndType(sub, twoFactorType)
-                .map(pm::entityToResponse);
+                .map(mapper::entityToResponse);
     }
 
     private final TwoFactorUserRepository repository;
-    private final TwoFactorUserPM pm;
+    private final TwoFactorUserPM mapper;
 }

@@ -41,7 +41,8 @@ public enum ExceptionType {
     IO_EXCEPTION("IO exception"),
     TWO_FACTOR_AUTHENTICATION("Two factor authentication"),
     PERSONALIZED("Personalized"),
-    ;
+    VAULT("Vault"),
+    SQL_EXCEPTION("SQL EXCEPTION");
 
     ExceptionType(String type) {
         this.type = type;

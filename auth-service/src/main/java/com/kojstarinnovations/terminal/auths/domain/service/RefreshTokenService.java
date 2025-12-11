@@ -1,7 +1,7 @@
 package com.kojstarinnovations.terminal.auths.domain.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nAuthConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.RefreshTokenData;
 import com.kojstarinnovations.terminal.commons.exception.CriticalSecurityException;
 import lombok.RequiredArgsConstructor;
@@ -72,7 +72,7 @@ public class RefreshTokenService {
         String tokenKey = PREFIX_REFRESH_TOKEN + tokenId;
         String jsonValue = redisTemplate.opsForValue().get(tokenKey);
         if (jsonValue == null) {
-            throw new CriticalSecurityException(ExceptionConstants.TOKEN_NOT_FOUND);
+            throw new CriticalSecurityException(I18nAuthConstants.EXCEPTION_TOKEN_NOT_FOUND);
         }
         return objectMapper.readValue(jsonValue, RefreshTokenData.class);
     }
@@ -140,7 +140,7 @@ public class RefreshTokenService {
         String tokenIpKey = PREFIX_TOKEN_IP + tokenId;
         List<String> tokenIps = redisTemplate.opsForList().range(tokenIpKey, 0, -1);
         if (tokenIps == null || tokenIps.isEmpty()) {
-            throw new CriticalSecurityException(ExceptionConstants.TOKEN_IP_NOT_FOUND);
+            throw new CriticalSecurityException(I18nAuthConstants.EXCEPTION_TOKEN_IP_NOT_FOUND);
         }
         return tokenIps;
     }

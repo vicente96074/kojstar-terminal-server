@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.RolDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.RolResponse;
@@ -42,9 +43,7 @@ public class RolService implements RolUC {
      */
     @Override
     public boolean existsById(String id) {
-        boolean exists = outputPort.existsById(id);
-
-        return exists;
+        return outputPort.existsById(id);
     }
 
     /**
@@ -55,9 +54,7 @@ public class RolService implements RolUC {
      */
     @Override
     public boolean existsByRolName(RolName rolName) {
-        boolean exists = outputPort.existsByRolName(rolName);
-
-        return exists;
+        return outputPort.existsByRolName(rolName);
     }
 
     /**
@@ -70,16 +67,14 @@ public class RolService implements RolUC {
     public RolResponse save(RolRequest request) {
 
         if (existsByRolName(request.getRolName())) {
-            throw new DuplicateException("Rol already exists");
+            throw new DuplicateException(I18nUserConstants.EXCEPTION_ROL_DUPLICATED);
         }
 
         RolDTO dto = domainMapper.requestToDTO(request);
         dto.setId(null);
         dto.setStatus(Status.ACTIVE);
 
-        dto = outputPort.save(dto);
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.save(dto);
     }
 
     /**
@@ -100,9 +95,8 @@ public class RolService implements RolUC {
      */
     @Override
     public RolResponse getById(String id) {
-        Optional<RolDTO> optionalRolDto = outputPort.getById(id);
-
-        return domainMapper.dtoToResponse(optionalRolDto.orElseThrow(() -> new NotFoundException("Rol not found by ID")));
+        return outputPort.getById(id)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ROL_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -113,9 +107,9 @@ public class RolService implements RolUC {
      */
     @Override
     public Page<RolResponse> getPage(Pageable pageable) {
-        Page<RolResponse> responses = Optional.of(outputPort.getPage(pageable)).filter(page -> !page.isEmpty()).orElseThrow(() -> new NotFoundException("Rol not found by pageable")).map(domainMapper::dtoToResponse);
-
-        return responses;
+        return Optional.of(outputPort.getPage(pageable))
+                .filter(page -> !page.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ROL_PAGE_NOT_FOUND));
     }
 
     /**
@@ -125,9 +119,11 @@ public class RolService implements RolUC {
      */
     @Override
     public List<RolResponse> getAll() {
-        List<RolResponse> responses = Optional.of(outputPort.getAll()).filter(list -> !list.isEmpty()).orElseThrow(() -> new NotFoundException("All roles not found")).stream().map(domainMapper::dtoToResponse).toList();
-
-        return responses;
+        return Optional.of(outputPort.getAll())
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ROL_ALL_NOT_FOUND))
+                .stream()
+                .toList();
     }
 
     /**
@@ -141,15 +137,13 @@ public class RolService implements RolUC {
     public RolResponse updateById(RolRequest request, String id) {
 
         if (!existsById(id)) {
-            throw new NotFoundException("Rol not found by ID");
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_ROL_NOT_FOUND_BY_ID);
         }
 
         RolDTO modelDto = domainMapper.requestToDTO(request);
         modelDto.setStatus(Status.ACTIVE);
 
-        modelDto = outputPort.updateById(modelDto, id);
-
-        return domainMapper.dtoToResponse(modelDto);
+        return outputPort.updateById(modelDto, id);
     }
 
     /**
@@ -160,9 +154,8 @@ public class RolService implements RolUC {
      */
     @Override
     public RolResponse getByRolName(RolName rolName) {
-        Optional<RolDTO> optionalRolDto = outputPort.getByRolName(rolName);
-
-        return domainMapper.dtoToResponse(optionalRolDto.orElseThrow(() -> new NotFoundException("Rol not found by rolName")));
+        return outputPort.getByRolName(rolName)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_ROL_NOT_FOUND_BY_NAME));
     }
 
     private final RolOP outputPort;

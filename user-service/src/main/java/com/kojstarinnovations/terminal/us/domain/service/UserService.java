@@ -1,6 +1,6 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
-import com.kojstarinnovations.terminal.commons.data.constants.ExceptionConstants;
+import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.payload.commons.AuthPayload;
@@ -65,7 +65,7 @@ public class UserService implements UserUC {
     @Override
     public UserResponse save(UserRequest request) {
         if (existsByUsername(request.getUsername())) {
-            throw new DuplicateException("El nombre de usuario ya existe");
+            throw new DuplicateException(I18nUserConstants.EXCEPTION_USER_ALREADY_EXISTS);
         }
 
         if (existsByEmail(request.getEmail())) {
@@ -77,9 +77,7 @@ public class UserService implements UserUC {
         dto = (UserDTO) auditAttributeUSService.getAuditAttributesForSystem(dto); // Add audit attributes for system
         dto.setStoreId(request.getStoreId());
         dto.setStoreBranchId(request.getStoreBranchId());
-        dto = outputPort.save(dto);
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.save(dto);
     }
 
     /**
@@ -100,9 +98,8 @@ public class UserService implements UserUC {
      */
     @Override
     public UserResponse getById(String ID) {
-        Optional<UserDTO> userDto = outputPort.getById(ID);
-
-        return domainMapper.dtoToResponse(userDto.orElseThrow(() -> new NotFoundException("User not found by ID")));
+        return outputPort.getById(ID)
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_NOT_FOUND_BY_ID));
     }
 
     /**
@@ -113,7 +110,9 @@ public class UserService implements UserUC {
      */
     @Override
     public Page<UserResponse> getPage(Pageable pageable) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Optional.of(outputPort.getPage(pageable))
+                .filter(page -> !page.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_PAGE_NOT_FOUND));
     }
 
     /**
@@ -123,7 +122,9 @@ public class UserService implements UserUC {
      */
     @Override
     public List<UserResponse> getAll() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return Optional.of(outputPort.getAll())
+                .filter(list -> !list.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_ALL_NOT_FOUND));
     }
 
     /**
@@ -174,14 +175,14 @@ public class UserService implements UserUC {
             addressUSService.save(request.getAddressUSRequest());
             request.getContactUSRequests().forEach(contactUSService::save);
 
-            Set<String> roles = new HashSet<>();
+            List<String> roles = new ArrayList<>();
             roles.add("cashier");
 
-            Set<String> accesses = new HashSet<>();
+            List<String> accesses = new ArrayList<>();
             accesses.add("cash");
 
-            Set<RolResponse> rolesResponses = getRoleFromDB(roles);
-            Set<AccessResponse> accessesResponses = getAccessFromDB(accesses);
+            List<RolResponse> rolesResponses = getRoleFromDB(roles);
+            List<AccessResponse> accessesResponses = getAccessFromDB(accesses);
 
             userResponse.setRolResponses(rolesResponses);
             userResponse.setAccessResponses(accessesResponses);
@@ -217,8 +218,8 @@ public class UserService implements UserUC {
         addressUSService.save(request.getAddressUSRequest());
         request.getContactUSRequests().forEach(contactUSService::save);
 
-        Set<RolResponse> rolesResponses = getRoleFromDB(request.getRolesRequest());
-        Set<AccessResponse> accessesResponses = getAccessFromDB(request.getAccessesRequest());
+        List<RolResponse> rolesResponses = getRoleFromDB(request.getRolesRequest());
+        List<AccessResponse> accessesResponses = getAccessFromDB(request.getAccessesRequest());
 
         userResponse.setRolResponses(rolesResponses);
         userResponse.setAccessResponses(accessesResponses);
@@ -252,11 +253,11 @@ public class UserService implements UserUC {
         boolean existsRolById = rolService.existsById(roleId);
 
         if (!existsUserById) {
-            throw new NotFoundException("User not found by ID");
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_USER_NOT_FOUND_BY_ID);
         }
 
         if (!existsRolById) {
-            throw new NotFoundException("Rol not found by ID");
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_ROL_NOT_FOUND_BY_ID);
         }
 
         UserRolRequest userRolRequest = new UserRolRequest();
@@ -277,11 +278,11 @@ public class UserService implements UserUC {
         boolean existsAccessById = accessService.existsById(accessId);
 
         if (!existsUserById) {
-            throw new NotFoundException("User not found by ID");
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_USER_NOT_FOUND_BY_ID);
         }
 
         if (!existsAccessById) {
-            throw new NotFoundException("Access not found by ID");
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_ACCESS_NOT_FOUND_BY_ID);
         }
 
         UserAccessRequest userAccessRequest = new UserAccessRequest();
@@ -297,8 +298,8 @@ public class UserService implements UserUC {
      * @param roles the roles
      * @return rolesResponses the roles responses
      */
-    public Set<RolResponse> getRoleFromDB(Set<String> roles) {
-        Set<RolResponse> rolesResponses = new HashSet<>();
+    public List<RolResponse> getRoleFromDB(List<String> roles) {
+        List<RolResponse> rolesResponses = new ArrayList<>();
 
         if (roles.contains("super_admin")) {
             RolResponse rolResponse = rolService.getByRolName(RolName.SUPER_ADMIN);
@@ -356,8 +357,8 @@ public class UserService implements UserUC {
      * @param accesses the accesses
      * @return accessResponses the access responses
      */
-    public Set<AccessResponse> getAccessFromDB(Set<String> accesses) {
-        Set<AccessResponse> accessResponses = new HashSet<>();
+    public List<AccessResponse> getAccessFromDB(List<String> accesses) {
+        List<AccessResponse> accessResponses = new ArrayList<>();
 
         if (accesses.contains("administration")) {
             AccessResponse accessResponse = accessService.getByAccessName(AccessName.ADMINISTRATION);
@@ -491,22 +492,10 @@ public class UserService implements UserUC {
      * @return Page<UserResponse>
      */
     @Override
-    public Page<UserResponse> getPageUserActive(Pageable pageable) {
-        Page<UserResponse> page = outputPort.getPageUserActive(pageable).map(domainMapper::dtoToResponse);
-
-        return page;
-    }
-
-    public void updateUserSettingId(String userId, String userSettingId) {
-        if (userId == null || userId.isEmpty()) {
-            throw new NotFoundException("User ID cannot be null or empty");
-        }
-
-        if (userSettingId == null || userSettingId.isEmpty()) {
-            throw new NotFoundException("User Setting ID cannot be null or empty");
-        }
-
-        outputPort.updateUserSettingId(userId, userSettingId);
+    public Page<UserResponse> getActiveStatusPage(Pageable pageable) {
+        return Optional.of(outputPort.getPageUserActive(pageable))
+                .filter(page -> !page.isEmpty())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_ACTIVE_STATUS_PAGE_NOT_FOUND));
     }
 
     /**
@@ -519,42 +508,24 @@ public class UserService implements UserUC {
     @Override
     public UserResponse updateById(UserRequest request, String id) {
         if (!existsById(id)) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_USER_NOT_FOUND_BY_ID);
         }
 
         UserDTO dto = domainMapper.requestToDTO(request);
         dto = (UserDTO) auditAttributeUSService.getAuditAttributesForUpdate(dto);
 
-        dto = outputPort.updateById(dto, id);
-
-        return domainMapper.dtoToResponse(dto);
+        return outputPort.updateById(dto, id);
     }
 
     public UserAuthenticated getByAuthentication() {
         PrincipalUser principalUser = userDetailsService.getUserFromAuth();
 
         if (principalUser == null) {
-            throw new NotFoundException(ExceptionConstants.NOT_AUTHENTICATED);
+            throw new NotFoundException(I18nUserConstants.EXCEPTION_USER_NOT_AUTHENTICATED);
         }
 
-        Optional<UserDTO> userDto = outputPort.getById(principalUser.getSub());
-
-        if (userDto.isEmpty()) {
-            throw new NotFoundException(ExceptionConstants.USER_NOT_FOUND);
-        }
-
-        return UserAuthenticated.of(domainMapper.dtoToResponse(userDto.get()));
-    }
-
-    /**
-     * Get user by ID
-     *
-     * @param userId the user ID
-     * @return UserResponse the user response
-     */
-    @Override
-    public UserResponse getUserById(String userId) {
-        return outputPort.getPayloadById(userId);
+        return UserAuthenticated.of(outputPort.getById(principalUser.getSub())
+                .orElseThrow(() -> new NotFoundException(I18nUserConstants.EXCEPTION_USER_NOT_FOUND_BY_ID)));
     }
 
     /**
