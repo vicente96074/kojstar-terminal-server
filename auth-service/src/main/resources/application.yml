@@ -45,7 +45,12 @@ spring:
     protocol: ${KOJSTAR_TERMINAL_EMAIL_PROTOCOL}
     username: ${KOJSTAR_TERMINAL_EMAIL_USERNAME}
     password: ${KOJSTAR_TERMINAL_EMAIL_PASSWORD}
-    sender: ${KOJSTAR_TERMINAL_EMAIL_SENDER}
+    sender:
+      system: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM}
+      administrator: ${KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR}
+      support: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT}
+      notification: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION}
+      news: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS}
     properties:
       mail:
         smtp:

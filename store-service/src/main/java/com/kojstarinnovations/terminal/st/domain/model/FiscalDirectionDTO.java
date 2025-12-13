@@ -1,22 +1,17 @@
-package com.kojstarinnovations.terminal.commons.data.payload.branch;
+package com.kojstarinnovations.terminal.st.domain.model;
 
-import com.kojstarinnovations.terminal.commons.data.payload.commons.AuditAttributeResponse;
+import com.kojstarinnovations.terminal.commons.data.dto.commons.BasicAuditDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * FiscalDirectionResponse - Payload for Fiscal Direction with Audit Attributes
- *
- * @Author: Kojstar Innovations (Augusto Vicente)
- */
 @EqualsAndHashCode(callSuper = true)
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class FiscalDirectionResponse extends AuditAttributeResponse {
-    private Integer id;
+public class FiscalDirectionDTO extends BasicAuditDTO {
+    private String id;
     private String abbrev;
     private String identifierNumber;
     private String fiscalDirection;

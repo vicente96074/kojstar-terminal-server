@@ -22,9 +22,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Address {
 
-    @Column(name = "transaction_id", nullable = false)
-    private String transactionId;
-
     @Column(name = "address")
     private String address;
 

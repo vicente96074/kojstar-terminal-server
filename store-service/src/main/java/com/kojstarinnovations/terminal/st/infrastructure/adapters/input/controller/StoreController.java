@@ -1,7 +1,7 @@
 package com.kojstarinnovations.terminal.st.infrastructure.adapters.input.controller;
 
 import com.kojstarinnovations.terminal.commons.data.payload.storeservice.StoreResponse;
-import com.kojstarinnovations.terminal.st.application.data.request.StoreRequest;
+import com.kojstarinnovations.terminal.commons.data.transport.storeservice.StoreRequest;
 import com.kojstarinnovations.terminal.st.domain.ucextends.StoreUC;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,16 +17,10 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class StoreController {
 
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@securityService.hasAnyAccess('SUPER_ADMIN', 'CEO')")
+    @PostMapping(value = "/create-new", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@securityService.hasAnyRole('SUPER_ADMIN')")
     public ResponseEntity<StoreResponse> create(@Valid @RequestBody StoreRequest request) {
         return new ResponseEntity<>(service.save(request), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/create-by-system", produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("@securityService.hasAnyAccess('SUPER_ADMIN')")
-    public ResponseEntity<StoreResponse> createBySuperAdmin(@Valid @RequestBody StoreRequest request) {
-        return new ResponseEntity<>(service.execute(request), HttpStatus.OK);
     }
 
     private final StoreUC service;

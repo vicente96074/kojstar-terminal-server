@@ -8,11 +8,13 @@ import com.kojstarinnovations.terminal.commons.data.helper.CodeHelper;
 import com.kojstarinnovations.terminal.commons.data.helper.TokenHelper;
 import com.kojstarinnovations.terminal.commons.data.payload.commons.TokenJson;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
+import com.kojstarinnovations.terminal.commons.data.transport.mail.EmailRequest;
 import com.kojstarinnovations.terminal.commons.data.transport.mail.ForgotPasswordRequest;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -82,9 +84,18 @@ public class AuthEmailService {
         forgotPasswordOP.save(dto);
 
         // Pass the subject KEY and the Locale
-        emailService.sendEmail(variables, template, mailTo, subjectKey, lines, locale);
+        emailService.sendEmail(
+                EmailRequest.builder()
+                        .variables(variables)
+                        .template(template)
+                        .mailTo(mailTo)
+                        .subject(subjectKey)
+                        .inlineResources(lines)
+                        .locale(locale)
+                        .sender(supportSender)
+                        .build()
+        );
 
-        log.info("Forgot password email sent to: {}", request.getEmail());
         return TokenJson.of(token);
     }
 
@@ -93,4 +104,7 @@ public class AuthEmailService {
     private final AuthUC authService;
     private final ForgotPasswordOP forgotPasswordOP;
     private final ValidatorRequestsService validatorRequestsService;
+
+    @Value("${spring.mail.sender.support}")
+    private String supportSender;
 }

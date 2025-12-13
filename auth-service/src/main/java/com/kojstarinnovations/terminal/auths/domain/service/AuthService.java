@@ -51,8 +51,6 @@ public class AuthService implements AuthUC {
     @Override
     public JwtDTO login(LoginUser loginUser, String deviceUserAgent, String deviceIp) {
 
-        log.info("Req: {}", loginUser);
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
         );

@@ -18,9 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Contact {
 
-    @Column(name = "transaction_id", nullable = false)
-    private String transactionId;
-
     @Column(name = "contact_type", nullable = false, columnDefinition = "VARCHAR(12) DEFAULT 'NONE'")
     @Convert(converter = ContactTypeConverter.class)
     private ContactType contactType;

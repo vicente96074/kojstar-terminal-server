@@ -27,9 +27,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Identification {
 
-    @Column(name = "transaction_id", nullable = false)
-    private String transactionId;
-
     @Column(name = "identification_number", nullable = false)
     private String identificationNumber;
 

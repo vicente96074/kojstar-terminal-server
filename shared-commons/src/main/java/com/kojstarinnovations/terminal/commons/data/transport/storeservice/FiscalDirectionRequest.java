@@ -1,4 +1,4 @@
-package com.kojstarinnovations.terminal.commons.data.transport.branch;
+package com.kojstarinnovations.terminal.commons.data.transport.storeservice;
 
 import com.kojstarinnovations.terminal.commons.data.transport.commons.CommonsRequest;
 import com.kojstarinnovations.terminal.commons.validation.DataRequired;

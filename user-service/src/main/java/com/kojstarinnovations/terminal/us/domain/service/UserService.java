@@ -1,9 +1,7 @@
 package com.kojstarinnovations.terminal.us.domain.service;
 
 import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
-import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
-import com.kojstarinnovations.terminal.commons.data.payload.commons.AuthPayload;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.UserDTO;
 import com.kojstarinnovations.terminal.commons.data.enums.AccessName;
 import com.kojstarinnovations.terminal.commons.data.enums.RolName;
@@ -11,7 +9,7 @@ import com.kojstarinnovations.terminal.commons.data.payload.commons.UserAuthenti
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.AccessResponse;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.RolResponse;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
-import com.kojstarinnovations.terminal.commons.data.transport.preference.SettingDefaultRequest;
+import com.kojstarinnovations.terminal.commons.data.transport.mail.EmailRequest;
 import com.kojstarinnovations.terminal.commons.exception.DuplicateException;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import com.kojstarinnovations.terminal.shared.security.dto.PrincipalUser;
@@ -19,17 +17,22 @@ import com.kojstarinnovations.terminal.us.application.data.request.UserAccessReq
 import com.kojstarinnovations.terminal.us.application.data.request.UserRequest;
 import com.kojstarinnovations.terminal.us.application.data.request.UserRolRequest;
 import com.kojstarinnovations.terminal.us.domain.dmimpl.UserDM;
+import com.kojstarinnovations.terminal.us.domain.model.UserServiceLogDTO;
+import com.kojstarinnovations.terminal.us.domain.opextends.UserServiceLogOP;
 import com.kojstarinnovations.terminal.us.domain.opextends.UserOP;
 import com.kojstarinnovations.terminal.us.domain.ucextends.UserUC;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -158,12 +161,6 @@ public class UserService implements UserUC {
     @Transactional
     public UserResponse saveWithBasicRolesAndAccesses(UserRequest request) {
         try {
-            String transactionId = (String) transactionService.generateTransaction(PrefixCodesISO.USR_TRANSACTION_ID.getCode()).id();
-            request.setTransactionId(transactionId);
-            request.getIdentificationUSRequest().setTransactionId(transactionId);
-            request.getAddressUSRequest().setTransactionId(transactionId);
-            request.getContactUSRequests().forEach(contact -> contact.setTransactionId(transactionId));
-
             request.setPassword(passwordEncoder.encode(request.getPassword()));
             UserResponse userResponse = save(request);
 
@@ -204,14 +201,15 @@ public class UserService implements UserUC {
      * @param request the user request
      */
     @Transactional
-    public void saveWithRolesAndAccesses(@Valid UserRequest request) {
+    public void createOwnResources(@Valid UserRequest request) {
+        String secret = request.getPassword();
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-        UserResponse userResponse = save(request);
+        UserResponse userPayload = save(request);
 
         // Set user id
-        request.getIdentificationUSRequest().setUserId(userResponse.getId());
-        request.getAddressUSRequest().setUserId(userResponse.getId());
-        request.getContactUSRequests().forEach(contact -> contact.setUserId(userResponse.getId()));
+        request.getIdentificationUSRequest().setUserId(userPayload.getId());
+        request.getAddressUSRequest().setUserId(userPayload.getId());
+        request.getContactUSRequests().forEach(contact -> contact.setUserId(userPayload.getId()));
 
         // Save identification, address and contacts
         identificationUSService.save(request.getIdentificationUSRequest());
@@ -221,24 +219,45 @@ public class UserService implements UserUC {
         List<RolResponse> rolesResponses = getRoleFromDB(request.getRolesRequest());
         List<AccessResponse> accessesResponses = getAccessFromDB(request.getAccessesRequest());
 
-        userResponse.setRolResponses(rolesResponses);
-        userResponse.setAccessResponses(accessesResponses);
+        userPayload.setRolResponses(rolesResponses);
+        userPayload.setAccessResponses(accessesResponses);
 
-        rolesResponses.forEach(rol -> assignRole(userResponse.getId(), rol.getId()));
+        rolesResponses.forEach(rol -> assignRole(userPayload.getId(), rol.getId()));
 
-        accessesResponses.forEach(access -> assignAccess(userResponse.getId(), access.getId()));
+        accessesResponses.forEach(access -> assignAccess(userPayload.getId(), access.getId()));
 
-        SettingDefaultRequest defaultRequest = SettingDefaultRequest.builder()
-                .userId(userResponse.getId())
-                .transactionId(request.getTransactionId())
-                .authPayload(AuthPayload.builder()
-                        .userId(userResponse.getId())
-                        .storeBranchId(userResponse.getStoreBranchId())
-                        .storeId(userResponse.getStoreId())
-                        .build())
-                .build();
+        List<String> codeChars = new ArrayList<>();
+        for (char c : secret.toCharArray()) {
+            codeChars.add(String.valueOf(c));
+        }
 
-        log.info("SettingDefaultRequest: {}", defaultRequest);
+        emailService.sendEmail(
+                EmailRequest.builder()
+                        .variables(Map.of(
+                                "username", userPayload.getUsername(),
+                                "codeChars", codeChars
+
+                        ))
+                        .template("create-super-admin")
+                        .mailTo(userPayload.getEmail())
+                        .subject(messageSource.getMessage("csa.template.subject", null, Locale.forLanguageTag("es")))
+                        .inlineResources(Map.of("logo_image", "/images/Logo.png"))
+                        .locale(Locale.forLanguageTag("es"))
+                        .sender(systemSender)
+                        .build()
+        );
+
+        userServiceLogOP.save(
+                UserServiceLogDTO.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId("SYSTEM")
+                        .eventType("Create SUPER_ADMIN by system")
+                        .details(Map.of(
+                                "UserID", userPayload.getId(),
+                                "Service", "UserService",
+                                "Method", "createOwnResources")
+                        ).build()
+        );
     }
 
     /**
@@ -561,7 +580,13 @@ public class UserService implements UserUC {
     private final AddressUSService addressUSService;
     private final UserAccessService userAccessService;
     private final AuditAttributeUSService auditAttributeUSService;
-    private final TransactionService transactionService;
 
     private final UserDetailsServiceImpl userDetailsService;
+
+    private final UserServiceLogOP userServiceLogOP;
+
+    private final EmailService emailService;
+    private final MessageSource messageSource;
+    @Value("${spring.mail.sender.system}")
+    private String systemSender;
 }

@@ -39,7 +39,12 @@ export KOJSTAR_TERMINAL_EMAIL_PORT="your_email_port"
 export KOJSTAR_TERMINAL_EMAIL_PROTOCOL="your_email_protocol"
 export KOJSTAR_TERMINAL_EMAIL_USERNAME="your_email_username"
 export KOJSTAR_TERMINAL_EMAIL_PASSWORD="your_email_password"
-export KOJSTAR_TERMINAL_EMAIL_SENDER="your_email_sender"
+
+export KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM="your_email_sender_system"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR="your_email_sender_administrator"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT="your_email_sender_support"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION="your_email_sender_notification"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS="your_email_sender_news"
 
 export KOJSTAR_TERMINAL_SPRING_REDIS_HOST="your_redis_host"
 export KOJSTAR_TERMINAL_SPRING_REDIS_PORT="your_redis_port"
@@ -67,6 +72,8 @@ export KOJSTAR_TERMINAL_GITHUB_REDIRECT_URI="your-redirect-uri"
 export KOJSTAR_TERMINAL_JWT_KEY_STORE="your-jwt-key-store"
 export KOJSTAR_TERMINAL_JWT_KEY_PASSWORD="your-jwt-key-password"
 export KOJSTAR_TERMINAL_JWT_SECRET="your-jwt-secret"
+
+export KOJSTAR_TERMINAL_URI_MONGODB_LOGS="mongodb://remote:passwrod@ip:port/kojstar_terminal_logs?authSource=admin"
 ```
 
 - Save the file and exit the text editor.
@@ -124,8 +131,10 @@ sudo journalctl -u kt-user-service -f
   
   sudo systemctl start kt-auth-service
   sudo systemctl enable kt-auth-service
+  
   sudo systemctl start kt-user-service
   sudo systemctl enable kt-user-service
+  
   sudo systemctl start kt-oauth2-service
   sudo systemctl enable kt-oauth2-service
   
@@ -457,5 +466,60 @@ sudo crontab -e
 ```bash
 # Ejecutar el script cada día a las 3:00 AM (y luego cada 23 horas).
 0 3 * * * /usr/local/bin/vault-rotate-secret.sh >> /var/log/cron.log 2>&1
+
 # */5 * * * * /usr/local/bin/vault-rotate-secret.sh >> /var/log/cron.log 2>&1
+```
+
+## To read role id
+```bash
+vault read auth/approle/role/mysql-app-role/role-id
+```
+
+# MONGODB CONFIG
+# For MongoDB 
+
+```bash
+sudo nano /etc/mongod.conf
+bindIp: 0.0.0.0
+sudo systemctl restart mongod
+
+mongosh # Connect to MongoDB without user and password
+use admin
+```
+
+```bash
+db.createUser({
+  user: "admin",
+  pwd: "tu_contraseña_segura",
+  roles: [ { role: "userAdminAnyDatabase", db: "admin" } ]
+})
+
+mongosh --username admin --password 'tu_contraseña_segura' --authenticationDatabase admin
+
+security:
+  authorization: enabled
+
+sudo systemctl restart mongod
+
+db.createUser({
+  user: "remote",
+  pwd: "tu_contraseña_segura",
+  roles: [
+    { role: "readWrite", db: "test" },
+  ]
+})
+
+db.grantRolesToUser(
+  "remote",
+  [
+    {
+      role: "readWrite",
+      db: "kojstar_terminal_logs"
+    }
+  ]
+)
+  
+sudo systemctl restart mongod
+
+sudo ufw allow 27017
 ```

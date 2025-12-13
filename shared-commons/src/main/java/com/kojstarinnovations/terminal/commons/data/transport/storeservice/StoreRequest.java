@@ -1,4 +1,4 @@
-package com.kojstarinnovations.terminal.st.application.data.request;
+package com.kojstarinnovations.terminal.commons.data.transport.storeservice;
 
 import com.kojstarinnovations.terminal.commons.data.constants.I18nStoreConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.BusinessType;

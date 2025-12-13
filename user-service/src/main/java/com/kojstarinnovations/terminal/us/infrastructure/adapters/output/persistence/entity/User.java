@@ -3,6 +3,7 @@ package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persis
 import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.shared.entity.BasicAudit;
+import com.kojstarinnovations.terminal.us.vault.EncryptionConverter;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -61,32 +61,26 @@ public class User extends BasicAudit {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
-    @Column(name = "store_branch_id")
-    private String storeBranchId;
-
     @Column(name = "store_id")
     private String storeId;
 
-    @Column(name = "user_setting_id")
-    private String userSettingId;
-
-    @NotNull
+    //@NotNull
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_rol",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "rol_id")
     )
-    private Set<Rol> roles = new HashSet<>();
+    private Set<Rol> roles;
 
-    @NotNull
+    //@NotNull
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_access",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "access_id")
     )
-    private Set<Access> accesses = new HashSet<>();
+    private Set<Access> accesses;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<IdentificationUS> identificationsUS;
@@ -94,7 +88,7 @@ public class User extends BasicAudit {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<AddressUS> addressUS;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<TwoFactorUser> twoFactorUsers;
 
     /**
@@ -104,7 +98,7 @@ public class User extends BasicAudit {
     @PrePersist
     public void prePersist() {
         if (this.id == null || this.id.isEmpty()) {
-            this.id = UUIDHelper.generateUUID(PrefixCodesISO.USER_ID.getCode(), 15);
+            this.id = UUIDHelper.generateUUID(PrefixCodesISO.STORE_ID.getCode(), 8);
         }
     }
 }

@@ -37,15 +37,7 @@ public interface UserOP extends OutputPort<UserDTO, UserResponse, String> {
      * @return Page<UserDTO>
      */
     Page<UserResponse> getPageUserActive(Pageable pageable);
-
-    /**
-     * updateSettingId
-     *
-     * @param id            the id
-     * @param userSettingId the setting id
-     */
-    void updateUserSettingId(String id, String userSettingId);
-
+    
     /**
      * Block user
      *

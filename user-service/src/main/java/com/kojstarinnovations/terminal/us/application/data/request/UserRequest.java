@@ -2,7 +2,6 @@ package com.kojstarinnovations.terminal.us.application.data.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kojstarinnovations.terminal.commons.data.constants.ValidationConstants;
-import com.kojstarinnovations.terminal.commons.data.transport.commons.CommonsRequest;
 import com.kojstarinnovations.terminal.commons.validation.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -10,10 +9,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * UserRequest - Transport object for user requests
@@ -24,8 +20,7 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class UserRequest extends CommonsRequest {
+public class UserRequest {
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.FIRST_NAME_REQUIRED)

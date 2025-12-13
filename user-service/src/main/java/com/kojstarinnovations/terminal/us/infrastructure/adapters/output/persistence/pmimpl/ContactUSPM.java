@@ -2,7 +2,7 @@ package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persis
 
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.ContactUSDTO;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.ContactUSResponse;
-import com.kojstarinnovations.terminal.commons.pm.PM;
+import com.kojstarinnovations.terminal.commons.pm.PersistenceMapper;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persistence.entity.ContactUS;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ContactUSPM implements PM<ContactUS, ContactUSDTO, ContactUSResponse> {
+public class ContactUSPM implements PersistenceMapper<ContactUS, ContactUSDTO, ContactUSResponse> {
 
     /**
      * Maps a dto object to an entity object
@@ -21,6 +21,17 @@ public class ContactUSPM implements PM<ContactUS, ContactUSDTO, ContactUSRespons
     @Override
     public ContactUS dtoToEntity(ContactUSDTO dto) {
         return mapper.map(dto, ContactUS.class);
+    }
+
+    /**
+     * Maps an entity object to a dto object
+     *
+     * @param contactUS the entity to be mapped
+     * @return the mapped dto object
+     */
+    @Override
+    public ContactUSDTO entityToDTO(ContactUS contactUS) {
+        return mapper.map(contactUS, ContactUSDTO.class);
     }
 
     /**

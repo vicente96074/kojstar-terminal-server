@@ -17,8 +17,6 @@ public class Store extends BasicAudit {
     @Id
     private String id;
 
-    @Column(name = "location_id")
-    private Integer locationId;
     private String ceo;
     private String nit;
     private String name;
@@ -26,8 +24,8 @@ public class Store extends BasicAudit {
     private String phone;
     private String email;
 
-    @Column(name = "logo_url")
-    private String logoUrl;
+    @Column(name = "logo_name")
+    private String logoName;
 
     @Column(name = "business_type")
     @Convert(converter = BusinessTypeConverter.class)

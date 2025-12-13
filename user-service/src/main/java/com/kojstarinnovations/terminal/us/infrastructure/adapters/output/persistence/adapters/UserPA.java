@@ -144,17 +144,6 @@ public class UserPA implements UserOP {
     }
 
     /**
-     * updateSettingId
-     *
-     * @param id            the id
-     * @param userSettingId the setting id
-     */
-    @Override
-    public void updateUserSettingId(String id, String userSettingId) {
-        repository.updateUserSettingId(id, userSettingId);
-    }
-
-    /**
      * Block user
      *
      * @param userId the user ID

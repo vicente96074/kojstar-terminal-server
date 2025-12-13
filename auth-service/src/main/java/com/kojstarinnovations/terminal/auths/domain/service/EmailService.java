@@ -1,9 +1,9 @@
 package com.kojstarinnovations.terminal.auths.domain.service;
 
+import com.kojstarinnovations.terminal.commons.data.transport.mail.EmailRequest;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -12,7 +12,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -20,28 +19,28 @@ import java.util.Map;
 public class EmailService {
 
     @SneakyThrows
-    public void sendEmail(Map<String, Object> variables, String template, String mailTo, String subject, Map<String, Object> inlineResources, Locale locale) {
+    public void sendEmail(EmailRequest request) {
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,
                 MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
                 StandardCharsets.UTF_8.name());
 
         // Configure thymeleaf context
-        Context context = new Context(locale);
-        context.setVariables(variables);
+        Context context = new Context(request.getLocale());
+        context.setVariables(request.getVariables());
 
         // Process template
-        String html = templateEngine.process(template, context);
+        String html = templateEngine.process(request.getTemplate(), context);
 
         // Email configuration
-        helper.setTo(mailTo);
+        helper.setTo(request.getMailTo());
         helper.setText(html, true);
-        helper.setSubject(subject);
-        helper.setFrom(sender);
+        helper.setSubject(request.getSubject());
+        helper.setFrom(request.getSender());
 
         // Add inline resources more robustly
-        if (inlineResources != null) {
-            for (Map.Entry<String, Object> entry : inlineResources.entrySet()) {
+        if (request.getInlineResources() != null) {
+            for (Map.Entry<String, Object> entry : request.getInlineResources().entrySet()) {
                 if (entry.getValue() instanceof String resourcePath) {
                     helper.addInline(entry.getKey(), new ClassPathResource(resourcePath));
                 }
@@ -54,7 +53,4 @@ public class EmailService {
 
     private final SpringTemplateEngine templateEngine;
     private final JavaMailSender javaMailSender;
-
-    @Value("${spring.mail.sender}")
-    private String sender;
 }

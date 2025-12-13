@@ -2,15 +2,10 @@ package com.kojstarinnovations.terminal.commons.data.transport.commons;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kojstarinnovations.terminal.commons.data.constants.ValidationConstants;
-import com.kojstarinnovations.terminal.commons.data.enums.Gender;
-import com.kojstarinnovations.terminal.commons.data.enums.IdentificationType;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.IssuingAuthority;
 import com.kojstarinnovations.terminal.commons.validation.DataRequired;
 import com.kojstarinnovations.terminal.commons.validation.SQLInjectionMalicious;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -25,8 +20,7 @@ import java.time.LocalDate;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class IdentificationRequest extends CommonsRequest {
+public class IdentificationRequest{
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.IDENTIFICATION_NUMBER_REQUIRED)
