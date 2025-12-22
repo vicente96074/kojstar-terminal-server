@@ -6,7 +6,6 @@ import com.kojstarinnovations.terminal.commons.data.enums.ExceptionType;
 import com.kojstarinnovations.terminal.commons.data.enums.Methods;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.config.TokenInspector;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -78,7 +77,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request, response);
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             handleException(response, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
     }

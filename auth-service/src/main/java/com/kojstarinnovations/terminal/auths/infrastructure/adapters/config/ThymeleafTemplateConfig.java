@@ -19,7 +19,7 @@ public class ThymeleafTemplateConfig {
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename("i18n/reset-password/reset-password");
+        messageSource.setBasenames("i18n/common/common", "i18n/forgot-password/forgot-password");
         messageSource.setDefaultEncoding("UTF-8");
         messageSource.setUseCodeAsDefaultMessage(true);
         return messageSource;

@@ -11,6 +11,8 @@ import lombok.Getter;
 public enum PrefixCodesISO {
     STORE_ID("KTR"),
     FISCAL_DIRECTION_ID("FDT"),
+    CUZTOMIZED_USER("Ctz"),
+    GOOGLE_USER("Ggl"),
 
     USER_ID("KOJ"),
     ACCESS_ID("AC"),

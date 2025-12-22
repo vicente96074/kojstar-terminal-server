@@ -3,9 +3,7 @@ package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persis
 import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.shared.entity.BasicAudit;
-import com.kojstarinnovations.terminal.us.vault.EncryptionConverter;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -98,7 +96,7 @@ public class User extends BasicAudit {
     @PrePersist
     public void prePersist() {
         if (this.id == null || this.id.isEmpty()) {
-            this.id = UUIDHelper.generateUUID(PrefixCodesISO.STORE_ID.getCode(), 8);
+            this.id = UUIDHelper.generateUUID(PrefixCodesISO.STORE_ID.getCode() + PrefixCodesISO.CUZTOMIZED_USER.getCode(), 10);
         }
     }
 }

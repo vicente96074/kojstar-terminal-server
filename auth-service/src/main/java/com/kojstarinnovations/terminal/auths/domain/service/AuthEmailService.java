@@ -1,11 +1,13 @@
 package com.kojstarinnovations.terminal.auths.domain.service;
 
+import com.kojstarinnovations.terminal.auths.domain.opextends.AuthServiceInfoOP;
 import com.kojstarinnovations.terminal.auths.domain.opextends.ForgotPasswordOP;
 import com.kojstarinnovations.terminal.auths.domain.ucextends.AuthUC;
 import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.ForgotPasswordDTO;
 import com.kojstarinnovations.terminal.commons.data.helper.CodeHelper;
 import com.kojstarinnovations.terminal.commons.data.helper.TokenHelper;
+import com.kojstarinnovations.terminal.commons.data.log.BaseLog;
 import com.kojstarinnovations.terminal.commons.data.payload.commons.TokenJson;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
 import com.kojstarinnovations.terminal.commons.data.transport.mail.EmailRequest;
@@ -58,7 +60,7 @@ public class AuthEmailService {
         }
         variables.put("codeChars", codeChars); // PASSING CODE AS SIMPLE STRING
 
-        String template = "user-forgot-password";
+        String template = "forgot-password";
         String mailTo = request.getEmail();
 
         Map<String, Object> lines = new HashMap<>();
@@ -72,14 +74,14 @@ public class AuthEmailService {
                 .email(user.getEmail())
                 .token(token)
                 .code(code)
-                .creationDate(now)
+                .issueDate(now)
                 .expirationDate(now.plusMinutes(30))
                 .used(false)
                 .build();
 
         // Use 'en' as default, which is consistent with the 'en' property file suffix
         Locale locale = Locale.forLanguageTag(request.getLanguageTag() != null ? request.getLanguageTag() : "en");
-        String subjectKey = messageSource.getMessage("email.reset.subject", null, locale);
+        String subjectKey = messageSource.getMessage("fpw.subject", null, locale);
 
         forgotPasswordOP.save(dto);
 
@@ -96,6 +98,20 @@ public class AuthEmailService {
                         .build()
         );
 
+        authServiceInfoOP.save(
+                BaseLog.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId("system")
+                        .eventType("Reset Password")
+                        .details(Map.of(
+                                "Service", "AuthEmailService",
+                                "Method", "sendEmailForgotPassword",
+                                "Sender", supportSender,
+                                "Receiver", mailTo
+                        ))
+                        .build()
+        );
+
         return TokenJson.of(token);
     }
 
@@ -107,4 +123,6 @@ public class AuthEmailService {
 
     @Value("${spring.mail.sender.support}")
     private String supportSender;
+
+    private final AuthServiceInfoOP authServiceInfoOP;
 }

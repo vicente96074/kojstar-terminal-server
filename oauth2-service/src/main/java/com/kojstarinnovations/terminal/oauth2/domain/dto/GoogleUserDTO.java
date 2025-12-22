@@ -1,20 +1,19 @@
 package com.kojstarinnovations.terminal.oauth2.domain.dto;
 
+import com.kojstarinnovations.terminal.commons.data.dto.commons.BasicAuditDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.AccessDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.userservice.RolDTO;
-import com.kojstarinnovations.terminal.commons.data.enums.Status;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoogleUserDTO {
+@SuperBuilder
+public class GoogleUserDTO extends BasicAuditDTO {
     private String id;
     private String email;
     private String name;
@@ -24,8 +23,6 @@ public class GoogleUserDTO {
     private String storeId;
     private String clientVersion;
     private String deviceInfo;
-
-    private Status status;
 
     private List<RolDTO> rolDTOs;
     private List<AccessDTO> accessDTOs;

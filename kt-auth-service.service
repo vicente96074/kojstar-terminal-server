@@ -4,8 +4,8 @@ Description=Authentication Service
 [Service]
 Restart=always
 RestartSec=10
-WorkingDirectory=/home/augusto/Documentos/Projects/kojstar-terminal-server/auth-service/target/
-ExecStart=/usr/bin/java -jar /home/augusto/Documentos/Projects/kojstar-terminal-server/auth-service/target/auth-service.jar
+WorkingDirectory=/home/augusto/Documentos/Projects/kojstar-terminal/kojstar-terminal-server/auth-service/target/
+ExecStart=/usr/bin/java -jar /home/augusto/Documentos/Projects/kojstar-terminal/kojstar-terminal-server/auth-service/target/auth-service.jar
 
 EnvironmentFile=-/etc/kojstar-terminal/kt.env
 

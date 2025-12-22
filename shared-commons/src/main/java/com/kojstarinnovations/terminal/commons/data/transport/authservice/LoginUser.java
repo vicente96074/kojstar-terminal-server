@@ -1,12 +1,10 @@
 package com.kojstarinnovations.terminal.commons.data.transport.authservice;
 
 import com.kojstarinnovations.terminal.commons.data.constants.ValidationConstants;
-import com.kojstarinnovations.terminal.commons.data.transport.commons.CommonsRequest;
 import com.kojstarinnovations.terminal.commons.validation.DataRequired;
 import com.kojstarinnovations.terminal.commons.validation.SQLInjectionMalicious;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -19,8 +17,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class LoginUser extends CommonsRequest {
+public class LoginUser {
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = "Username es requerido")

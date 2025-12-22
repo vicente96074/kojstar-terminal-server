@@ -1,0 +1,67 @@
+# Server configuration (Dinamyc port number)
+server:
+  ssl:
+    enabled: false
+    key-alias: ${KOJSTAR_TERMINAL_SSL_KEY_ALIAS}
+    key-store: file:${KOJSTAR_TERMINAL_SSL_KEY_STORE}
+    key-store-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+    key-store-type: PKCS12
+    key-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+  port: 8081
+
+# Spring application configuration
+spring:
+  application:
+    name: storage-service
+  datasource:
+    url: ${KOJSTAR_TERMINAL_TEST_SERVICE_DB_URL}
+    username: ${KOJSTAR_TERMINAL_MYSQL_USERNAME}
+    password: ${KOJSTAR_TERMINAL_MYSQL_PASSWORD}
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 10
+      max-lifetime: 60000
+      validation-timeout: 3000
+      idle-timeout: 60000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+  transaction:
+    propagation: REQUIRED
+  jackson:
+    time-zone: ${KOJSTAR_TERMINAL_TIME_ZONE}
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 100MB
+      enabled: true
+      resolve-lazily: true
+      file-size-threshold: 10MB
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}
+          jwk-set-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}/oauth2/jwks
+  data:
+    mongodb:
+      uri: ${KOJSTAR_TERMINAL_URI_MONGODB_LOGS}
+
+# JWT secret and expiration
+jwt:
+  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
+  expiration: ${KOJSTAR_TERMINAL_JWT_EXPIRATION}
+
+# Media location on the server
+app:
+  media:
+    location: ${KOJSTAR_TERMINAL_MEDIA_LOCATION}
+
+# Logging configuration
+logging:
+  level:
+    root: INFO

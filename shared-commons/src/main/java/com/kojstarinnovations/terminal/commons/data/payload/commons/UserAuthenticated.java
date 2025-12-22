@@ -24,7 +24,7 @@ public class UserAuthenticated {
         String fullName = response.getFirstName() + (response.getMiddleName() != null ? " " + response.getMiddleName() : "")
                 + (response.getFirstSurname() != null ? " " + response.getFirstSurname() : "")
                 + (response.getSecondSurname() != null ? " " + response.getSecondSurname() : "")
-                + (response.getMarriageSurname() != null ? " " + response.getMarriageSurname() : "");
+                + (response.getMarriageSurname() != null && !response.getMarriageSurname().isEmpty() ? " De " + response.getMarriageSurname() : "");
 
         return UserAuthenticated.builder()
                 .sub(response.getId())

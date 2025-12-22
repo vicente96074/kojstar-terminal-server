@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.auths.jwt;
 
+import com.kojstarinnovations.terminal.commons.data.constants.SystemConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.AuthenticationMethod;
 import com.kojstarinnovations.terminal.commons.data.enums.Methods;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
@@ -46,7 +47,7 @@ public class JwtProvider implements JwtService {
                 .claim("token_id", UUIDHelper.generateUUID("rft", 15))
                 .claim("sub", principalUser.getSub())
                 .claim("createdAt", createdAt.toString())
-                .claim("issuer", "kojnexus")
+                .claim("issuer", SystemConstants.SYSTEM_NICK)
                 .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + (jwtExpiration * 60L * 1000L))) // Expire in 30 days (milliseconds)
                 .signWith(getSecret(secret)).compact();
     }
@@ -69,7 +70,7 @@ public class JwtProvider implements JwtService {
                 .claim("accesses", accesses)
                 .claim("storeBranchId", principalUser.getStoreBranchId())
                 .claim("storeId", principalUser.getStoreId())
-                .claim("provider", "kojnexus")
+                .claim("provider", SystemConstants.SYSTEM_NICK)
                 .claim(String.valueOf(Methods.AUTHENTICATION_METHOD).toLowerCase(), AuthenticationMethod.CUSTOM.name().toLowerCase())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + (60L * 1000L))) // Expire in 1 minutes

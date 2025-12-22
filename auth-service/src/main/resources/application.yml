@@ -78,6 +78,9 @@ spring:
         app-role-path: approle
       connection-timeout: 15000
       fail-fast: true
+  data:
+    mongodb:
+      uri: ${KOJSTAR_TERMINAL_URI_MONGODB_LOGS}
 
 vault:
   transit:

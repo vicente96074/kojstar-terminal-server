@@ -5,6 +5,9 @@ CREATE DATABASE IF NOT EXISTS kt_store;
 
 DROP DATABASE IF EXISTS kt_auth;
 CREATE DATABASE IF NOT EXISTS kt_auth;
+
+DROP DATABASE IF EXISTS kt_test;
+CREATE DATABASE IF NOT EXISTS kt_test;
 ```
 
 # Edit environment variables
@@ -21,59 +24,84 @@ To edit environment variables on your system, follow the instructions below base
 - Add the following lines
 
 ```bash
-# Kojstar Terminal Environment Variables
-export KOJSTAR_TERMINAL_SSL_KEY_ALIAS="your_ssl_key_alias"
-export KOJSTAR_TERMINAL_SSL_KEY_STORE="your_ssl_key_store_path"
-export KOJSTAR_TERMINAL_SSL_KEY_PASSWORD="your_ssl_key_password"
-export KOJSTAR_TERMINAL_SSL_KEY_PASSWORD="your_ssl_key_password"
+# File: ~/.bashrc
+####################################################################################################
+####################################################################################################
+#                               KOJSTAR TERMINAL ENVIRONMENT VARIABLES
+####################################################################################################
+####################################################################################################
 
-export KOJSTAR_TERMINAL_AUTH_SERVICE_DB_URL="your_database_url"
-export KOJSTAR_TERMINAL_OAUTH2_SERVICE_DB_URL="your_database_url"
+## Internal ENV
+export IP_SERVER="192.168.1.233"
+export MYSQL_API="jdbc:mysql"
+export MYSQL_PORT="3306"
+export MYSQL_OTHER_PARAMS="useSSL=false&serverTimezone=America/Guatemala&useLegacyDateTimeCode=false&allowPublicKeyRetrieval=true"
 
-export KOJSTAR_TERMINAL_MYSQL_USERNAME="your_database_username"
-export KOJSTAR_TERMINAL_MYSQL_PASSWORD="your_database_password"
-export KOJSTAR_TERMINAL_TIME_ZONE="your_time_zone"
+export EMAIL_SENDER_SYSTEM_NICK="Kojstar T. "
+export EMAIL_SENDER_DOMAIN="kojstarterminal.com"
 
-export KOJSTAR_TERMINAL_EMAIL_HOST="your_email_host"
-export KOJSTAR_TERMINAL_EMAIL_PORT="your_email_port"
-export KOJSTAR_TERMINAL_EMAIL_PROTOCOL="your_email_protocol"
-export KOJSTAR_TERMINAL_EMAIL_USERNAME="your_email_username"
-export KOJSTAR_TERMINAL_EMAIL_PASSWORD="your_email_password"
+export MONGODB_API="mongodb"
+export MONGODB_PORT="27017"
 
-export KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM="your_email_sender_system"
-export KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR="your_email_sender_administrator"
-export KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT="your_email_sender_support"
-export KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION="your_email_sender_notification"
-export KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS="your_email_sender_news"
+## External ENV
+export KOJSTAR_TERMINAL_SSL_KEY_ALIAS="alias"
+export KOJSTAR_TERMINAL_SSL_KEY_STORE="/path/to/key/store.p12"
+export KOJSTAR_TERMINAL_SSL_KEY_PASSWORD="ssl-password"
 
-export KOJSTAR_TERMINAL_SPRING_REDIS_HOST="your_redis_host"
-export KOJSTAR_TERMINAL_SPRING_REDIS_PORT="your_redis_port"
-export KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD="your_redis_password"
-export KOJSTAR_TERMINAL_JWT_SECRET="your_jwt_secret"
-export KOJSTAR_TERMINAL_JWT_EXPIRATION="your_jwt_expiration_time"
-export KOJSTAR_TERMINAL_SETTINGS_JSON_FILE_PATH="your_settings_json_file_path"
-export KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER="your_oauth2_host_issuer"
+export KOJSTAR_TERMINAL_AUTH_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_auth?${MYSQL_OTHER_PARAMS}"
+export KOJSTAR_TERMINAL_OAUTH2_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_auth?${MYSQL_OTHER_PARAMS}"
+export KOJSTAR_TERMINAL_STORE_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_store?${MYSQL_OTHER_PARAMS}"
+export KOJSTAR_TERMINAL_TEST_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_test?${MYSQL_OTHER_PARAMS}"
 
-export KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS="http://localhost:4200,https://192.168.1.233:4200,https://your_domai.com,https://www.your_domain.com" # On production, use the your_domain.com
+export KOJSTAR_TERMINAL_MYSQL_USERNAME="username"
+export KOJSTAR_TERMINAL_MYSQL_PASSWORD="mysql-password"
+export KOJSTAR_TERMINAL_TIME_ZONE="America/Guatemala"
+
+export KOJSTAR_TERMINAL_EMAIL_USERNAME="brevo-login-username"
+export KOJSTAR_TERMINAL_EMAIL_PASSWORD="brevo-secret"
+export KOJSTAR_TERMINAL_EMAIL_HOST="smtp-relay.brevo.com"
+export KOJSTAR_TERMINAL_EMAIL_PORT="587"
+export KOJSTAR_TERMINAL_EMAIL_PROTOCOL="smtp"
+
+export KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM="${EMAIL_SENDER_SYSTEM_NICK}System <system@${EMAIL_SENDER_DOMAIN}>"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR="${EMAIL_SENDER_SYSTEM_NICK}Admin <admin@${EMAIL_SENDER_DOMAIN}>"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT="${EMAIL_SENDER_SYSTEM_NICK}Support <support@${EMAIL_SENDER_DOMAIN}>"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION="${EMAIL_SENDER_SYSTEM_NICK}Notification <notification@${EMAIL_SENDER_DOMAIN}>"
+export KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS="${EMAIL_SENDER_SYSTEM_NICK}News <news@${EMAIL_SENDER_DOMAIN}>"
+
+export KOJSTAR_TERMINAL_SPRING_REDIS_HOST="${IP_SERVER}"
+export KOJSTAR_TERMINAL_SPRING_REDIS_PORT="6379"
+export KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD="redis-password"
+
+export KOJSTAR_TERMINAL_FILE_LOCATION="/home/augusto/Documentos/Projects/kojnexus/files"
+export KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER="http://localhost:9000" # https://your-domain.com:9000
+
+export KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS="http://localhost:4200,https://${IP_SERVER}:4200,https://your_domai.com,https://www.your_domain.com" # On production, use the your_domain.com
 export KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS="GET,POST,PUT,DELETE,OPTIONS" # Allowed methods
 export KOJSTAR_TERMINAL_CORS_ALLOWED_HEADERS="x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, X-Device-User-Agent, X-Device-IP" # Allowed headers
 export KOJSTAR_TERMINAL_CORS_MAX_AGE="3600" # 1 hour
 
-export KOJSTAR_TERMINAL_VAULT_ROLE_ID="your_vault_role_id"
-export KOJSTAR_TERMINAL_VAULT_SECRET_ID="your_secret_id"
+export VAULT_ADDR=http://127.0.0.1:8200
 
-export KOJSTAR_TERMINAL_GOOGLE_CLIENT_ID="your-google-client-id"
-export KOJSTAR_TERMINAL_GOOGLE_CLIENT_SECRET="your-google-client-secret"
-export KOJSTAR_TERMINAL_GOOGLE_REDIRECT_URI="your-redirect-uri"
-export KOJSTAR_TERMINAL_GITHUB_CLIENT_ID="your-google-client-id"
-export KOJSTAR_TERMINAL_GITHUB_CLIENT_SECRET="your-google-client-secret"
-export KOJSTAR_TERMINAL_GITHUB_REDIRECT_URI="your-redirect-uri"
+export KOJSTAR_TERMINAL_VAULT_ROLE_ID="role-id"
+export KOJSTAR_TERMINAL_VAULT_SECRET_ID="secret-id"
 
-export KOJSTAR_TERMINAL_JWT_KEY_STORE="your-jwt-key-store"
-export KOJSTAR_TERMINAL_JWT_KEY_PASSWORD="your-jwt-key-password"
-export KOJSTAR_TERMINAL_JWT_SECRET="your-jwt-secret"
+export KOJSTAR_TERMINAL_GOOGLE_CLIENT_ID="google-client-id"
+export KOJSTAR_TERMINAL_GOOGLE_CLIENT_SECRET="google-client-secret"
+export KOJSTAR_TERMINAL_GOOGLE_REDIRECT_URI="http://localhost:9000/login/oauth2/code/google" # https://your-domain.com:9000/login/oauth2/code/google
 
-export KOJSTAR_TERMINAL_URI_MONGODB_LOGS="mongodb://remote:passwrod@ip:port/kojstar_terminal_logs?authSource=admin"
+export KOJSTAR_TERMINAL_GITHUB_CLIENT_ID="github-client-id"
+export KOJSTAR_TERMINAL_GITHUB_CLIENT_SECRET="github-client-secret"
+export KOJSTAR_TERMINAL_GITHUB_REDIRECT_URI="http://localhost:9000/login/oauth2/code/github" # https://your-domain.com:9000/login/oauth2/code/github
+
+export KOJSTAR_TERMINAL_JWT_KEY_STORE="/path/to/your/keystore.jks"
+export KOJSTAR_TERMINAL_JWT_KEY_PASSWORD="jwt-key-password"
+export KOJSTAR_TERMINAL_JWT_SECRET="secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret"
+export KOJSTAR_TERMINAL_JWT_EXPIRATION="43200"
+
+export KOJSTAR_TERMINAL_URI_MONGODB_LOGS="${MONGODB_API}://remote:password@${IP_SERVER}:${MONGODB_PORT}/kojstar_terminal_logs?authSource=admin"
+
+export KOJSTAR_TERMINAL_MEDIA_LOCATION="/home/augusto/Documentos/Projects/kojstar-terminal/files/images/"
 ```
 
 - Save the file and exit the text editor.
@@ -94,6 +122,87 @@ sudo mkdir -p /etc/kojstar-terminal
 sudo nano /etc/kojstar-terminal/kt.env
 
 # Add the Kojstar Terminal environment variables to kt.env file
+```
+
+```bash
+# File: kt.env
+####################################################################################################
+####################################################################################################
+#                               KOJSTAR TERMINAL ENVIRONMENT VARIABLES
+####################################################################################################
+####################################################################################################
+
+## Internal ENV
+IP_SERVER="192.168.1.233"
+MYSQL_API="jdbc:mysql"
+MYSQL_PORT="3306"
+MYSQL_OTHER_PARAMS="useSSL=false&serverTimezone=America/Guatemala&useLegacyDateTimeCode=false&allowPublicKeyRetrieval=true"
+
+EMAIL_SENDER_SYSTEM_NICK="Kojstar T. "
+EMAIL_SENDER_DOMAIN="kojstarterminal.com"
+
+MONGODB_API="mongodb"
+MONGODB_PORT="27017"
+
+## External ENV
+KOJSTAR_TERMINAL_SSL_KEY_ALIAS="alias"
+KOJSTAR_TERMINAL_SSL_KEY_STORE="/path/to/key/store.p12"
+KOJSTAR_TERMINAL_SSL_KEY_PASSWORD="ssl-password"
+
+KOJSTAR_TERMINAL_AUTH_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_auth?${MYSQL_OTHER_PARAMS}"
+KOJSTAR_TERMINAL_OAUTH2_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_auth?${MYSQL_OTHER_PARAMS}"
+KOJSTAR_TERMINAL_STORE_SERVICE_DB_URL="${MYSQL_API}://${IP_SERVER}:${MYSQL_PORT}/kt_store?${MYSQL_OTHER_PARAMS}"
+KOJSTAR_TERMINAL_TEST_SERVICE_DB_URL
+
+KOJSTAR_TERMINAL_MYSQL_USERNAME="username"
+KOJSTAR_TERMINAL_MYSQL_PASSWORD="mysql-password"
+KOJSTAR_TERMINAL_TIME_ZONE="America/Guatemala"
+
+KOJSTAR_TERMINAL_EMAIL_USERNAME="brevo-login-username"
+KOJSTAR_TERMINAL_EMAIL_PASSWORD="brevo-secret"
+KOJSTAR_TERMINAL_EMAIL_HOST="smtp-relay.brevo.com"
+KOJSTAR_TERMINAL_EMAIL_PORT="587"
+KOJSTAR_TERMINAL_EMAIL_PROTOCOL="smtp"
+
+KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM="${EMAIL_SENDER_SYSTEM_NICK}System <system@${EMAIL_SENDER_DOMAIN}>"
+KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR="${EMAIL_SENDER_SYSTEM_NICK}Admin <admin@${EMAIL_SENDER_DOMAIN}>"
+KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT="${EMAIL_SENDER_SYSTEM_NICK}Support <support@${EMAIL_SENDER_DOMAIN}>"
+KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION="${EMAIL_SENDER_SYSTEM_NICK}Notification <notification@${EMAIL_SENDER_DOMAIN}>"
+KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS="${EMAIL_SENDER_SYSTEM_NICK}News <news@${EMAIL_SENDER_DOMAIN}>"
+
+KOJSTAR_TERMINAL_SPRING_REDIS_HOST="${IP_SERVER}"
+KOJSTAR_TERMINAL_SPRING_REDIS_PORT="6379"
+KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD="redis-password"
+
+KOJSTAR_TERMINAL_FILE_LOCATION="/home/augusto/Documentos/Projects/kojnexus/files"
+KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER="http://localhost:9000" # https://your-domain.com:9000
+
+KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS="http://localhost:4200,https://${IP_SERVER}:4200,https://your_domai.com,https://www.your_domain.com" # On production, use the your_domain.com
+KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS="GET,POST,PUT,DELETE,OPTIONS" # Allowed methods
+KOJSTAR_TERMINAL_CORS_ALLOWED_HEADERS="x-requested-with, authorization, Content-Type, Authorization, credential, X-XSRF-TOKEN, X-Device-User-Agent, X-Device-IP" # Allowed headers
+KOJSTAR_TERMINAL_CORS_MAX_AGE="3600" # 1 hour
+
+VAULT_ADDR=http://127.0.0.1:8200
+
+KOJSTAR_TERMINAL_VAULT_ROLE_ID="role-id"
+KOJSTAR_TERMINAL_VAULT_SECRET_ID="secret-id"
+
+KOJSTAR_TERMINAL_GOOGLE_CLIENT_ID="google-client-id"
+KOJSTAR_TERMINAL_GOOGLE_CLIENT_SECRET="google-client-secret"
+KOJSTAR_TERMINAL_GOOGLE_REDIRECT_URI="http://localhost:9000/login/oauth2/code/google" # https://your-domain.com:9000/login/oauth2/code/google
+
+KOJSTAR_TERMINAL_GITHUB_CLIENT_ID="github-client-id"
+KOJSTAR_TERMINAL_GITHUB_CLIENT_SECRET="github-client-secret"
+KOJSTAR_TERMINAL_GITHUB_REDIRECT_URI="http://localhost:9000/login/oauth2/code/github" # https://your-domain.com:9000/login/oauth2/code/github
+
+KOJSTAR_TERMINAL_JWT_KEY_STORE="/path/to/your/keystore.jks"
+KOJSTAR_TERMINAL_JWT_KEY_PASSWORD="jwt-key-password"
+KOJSTAR_TERMINAL_JWT_SECRET="secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret"
+KOJSTAR_TERMINAL_JWT_EXPIRATION="43200"
+
+KOJSTAR_TERMINAL_URI_MONGODB_LOGS="${MONGODB_API}://remote:password@${IP_SERVER}:${MONGODB_PORT}/kojstar_terminal_logs?authSource=admin"
+
+KOJSTAR_TERMINAL_MEDIA_LOCATION="/home/augusto/Documentos/Projects/kojstar-terminal/files/images/"
 ```
 
 - Set ownership and permissions for security:
@@ -522,4 +631,32 @@ db.grantRolesToUser(
 sudo systemctl restart mongod
 
 sudo ufw allow 27017
+```
+
+# Oauth2 Key.jks
+- To generate the key.jks file, run the following command
+
+```bash
+# 1. Crear keystore y generar clave RSA (válido por 10 años)
+keytool -genkeypair \
+  -alias jwt-key \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 3650 \
+  -keystore keystore.jks \
+  -storepass your-password \
+  -keypass your-password \
+  -dname "CN=, OU=, O=, L=, S=, C="
+
+# 2. Exportar la clave pública (opcional, para verificación)
+keytool -exportcert \
+  -alias jwt-key \
+  -keystore keystore.jks \
+  -storepass your-password \
+  -file public-key.cer
+
+# 3. Ver el contenido (opcional)
+keytool -list -v \
+  -keystore keystore.jks \
+  -storepass your-password
 ```
