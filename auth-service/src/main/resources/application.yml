@@ -80,7 +80,12 @@ spring:
       fail-fast: true
   data:
     mongodb:
-      uri: ${KOJSTAR_TERMINAL_URI_MONGODB_LOGS}
+      host: ${KOJSTAR_TERMINAL_MONGODB_HOST}
+      port: ${KOJSTAR_TERMINAL_MONGODB_PORT}
+      database: ${KOJSTAR_TERMINAL_MONGODB_DATABASE}
+      username: ${KOJSTAR_TERMINAL_MONGODB_USERNAME}
+      password: ${KOJSTAR_TERMINAL_MONGODB_PASSWORD}
+      authentication-database: ${KOJSTAR_TERMINAL_MONGODB_AUTH_DB}
 
 vault:
   transit:

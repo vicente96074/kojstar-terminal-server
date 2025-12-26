@@ -3,6 +3,7 @@ package com.kojstarinnovations.terminal.us.infrastructure.adapters.output.persis
 import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.shared.entity.BasicAudit;
+import com.kojstarinnovations.terminal.us.vault.EncryptionConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,6 +46,7 @@ public class User extends BasicAudit {
     private String secondSurname;
 
     @Column(name = "marriage_surname")
+    //@Convert(converter = EncryptionConverter.class)
     private String marriageSurname;
 
     @Column(unique = true, nullable = false)

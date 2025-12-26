@@ -6,6 +6,9 @@ Restart=always
 RestartSec=10
 WorkingDirectory=/home/augusto/Documentos/Projects/kojstar-terminal/kojstar-terminal-server/user-service/target/
 ExecStart=/usr/bin/java -jar /home/augusto/Documentos/Projects/kojstar-terminal/kojstar-terminal-server/user-service/target/user-service.jar
+
+EnvironmentFile=-/etc/kojstar-terminal/kt.env
+
 SuccessExitStatus=143
 
 [Install]
