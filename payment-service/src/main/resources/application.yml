@@ -1,0 +1,106 @@
+# Server configuration (Dinamyc port number)
+server:
+  port: 8082
+
+# Spring application configuration
+spring:
+  application:
+    name: kt-payment-service
+  datasource:
+    url: ${KOJSTAR_TERMINAL_PAYMENT_SERVICE_DB_URL}
+    username: ${KOJSTAR_TERMINAL_MYSQL_USERNAME}
+    password: ${KOJSTAR_TERMINAL_MYSQL_PASSWORD}
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 10
+      max-lifetime: 60000
+      validation-timeout: 3000
+      idle-timeout: 60000
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    show-sql: false
+  transaction:
+    propagation: REQUIRED
+  jackson:
+    time-zone: ${KOJSTAR_TERMINAL_TIME_ZONE}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+  mail:
+    host: ${KOJSTAR_TERMINAL_EMAIL_HOST}
+    port: ${KOJSTAR_TERMINAL_EMAIL_PORT}
+    protocol: ${KOJSTAR_TERMINAL_EMAIL_PROTOCOL}
+    username: ${KOJSTAR_TERMINAL_EMAIL_USERNAME}
+    password: ${KOJSTAR_TERMINAL_EMAIL_PASSWORD}
+    sender:
+      system: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM}
+      administrator: ${KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR}
+      support: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT}
+      notification: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION}
+      news: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    encoding: UTF-8
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}
+          jwk-set-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}/oauth2/jwks
+  task:
+    scheduling:
+      enabled: true
+  cloud:
+    vault:
+      scheme: http
+      host: 127.0.0.1
+      port: 8200
+      authentication: APPROLE
+      app-role:
+        role-id: ${KOJSTAR_TERMINAL_VAULT_ROLE_ID}
+        secret-id: ${KOJSTAR_TERMINAL_VAULT_SECRET_ID}
+        app-role-path: approle
+      connection-timeout: 15000
+      fail-fast: true
+  data:
+    mongodb:
+      host: ${KOJSTAR_TERMINAL_MONGODB_HOST}
+      port: ${KOJSTAR_TERMINAL_MONGODB_PORT}
+      database: ${KOJSTAR_TERMINAL_MONGODB_DATABASE}
+      username: ${KOJSTAR_TERMINAL_MONGODB_USERNAME}
+      password: ${KOJSTAR_TERMINAL_MONGODB_PASSWORD}
+      authentication-database: ${KOJSTAR_TERMINAL_MONGODB_AUTH_DB}
+
+vault:
+  transit:
+    key-name: mysql-app-data
+
+# Custom properties
+reencryption:
+  batch-size: 1000
+
+# JWT secret and expiration
+jwt:
+  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
+  expiration: ${KOJSTAR_TERMINAL_JWT_EXPIRATION}
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+
+cors:
+  allowed-origins: ${KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS}
+  allowed-methods: ${KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS}
+  allowed-headers: ${KOJSTAR_TERMINAL_CORS_ALLOWED_HEADERS}
+  max-age: ${KOJSTAR_TERMINAL_CORS_MAX_AGE}
