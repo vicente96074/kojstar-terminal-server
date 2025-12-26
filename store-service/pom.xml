@@ -13,7 +13,6 @@
 
     <!-- Project Information -->
     <artifactId>store-service</artifactId>
-    <version>0.0.1</version>
     <description>Micro service for store of system</description>
 
     <!-- Properties -->
@@ -219,6 +218,11 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
     </dependencies>

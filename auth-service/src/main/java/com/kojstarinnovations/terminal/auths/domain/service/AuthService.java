@@ -1,12 +1,14 @@
 package com.kojstarinnovations.terminal.auths.domain.service;
 
 import com.kojstarinnovations.terminal.auths.domain.opextends.AuthOP;
+import com.kojstarinnovations.terminal.auths.domain.opextends.AuthServiceInfoOP;
 import com.kojstarinnovations.terminal.auths.domain.ucextends.AuthUC;
 import com.kojstarinnovations.terminal.auths.jwt.JwtProvider;
 import com.kojstarinnovations.terminal.commons.data.constants.I18nAuthConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.JwtDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.RefreshTokenData;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
+import com.kojstarinnovations.terminal.commons.data.log.BaseLog;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
 import com.kojstarinnovations.terminal.commons.data.transport.authservice.LoginUser;
 import com.kojstarinnovations.terminal.commons.data.transport.authservice.RefreshTokenRequest;
@@ -27,6 +29,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,8 +53,6 @@ public class AuthService implements AuthUC {
 
     @Override
     public JwtDTO login(LoginUser loginUser, String deviceUserAgent, String deviceIp) {
-
-        log.info("Req: {}", loginUser);
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword())
@@ -93,6 +94,18 @@ public class AuthService implements AuthUC {
                 deviceIp, now, now.plus(30, ChronoUnit.DAYS)
         );
 
+        authServiceInfoOP.save(
+                BaseLog.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId(sub)
+                        .eventType("Login")
+                        .details(Map.of(
+                                "Service", "AuthService",
+                                "Method", "login"
+                        ))
+                        .build()
+        );
+
         return JwtDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -129,7 +142,17 @@ public class AuthService implements AuthUC {
 
         String newAccessToken = jwtProvider.generateAccessToken(authentication);
 
-        log.info("Token refreshed for user: {} at {}", sub, LocalDateTime.now());
+        authServiceInfoOP.save(
+                BaseLog.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId(sub)
+                        .eventType("Refresh Token")
+                        .details(Map.of(
+                                "Service", "AuthService",
+                                "Method", "refreshTokenWithout2fA"
+                        ))
+                        .build()
+        );
 
         return JwtDTO.builder()
                 .accessToken(newAccessToken)
@@ -202,7 +225,17 @@ public class AuthService implements AuthUC {
 
         String newAccessToken = jwtProvider.generateAccessToken(authentication);
 
-        log.info("Token refreshed for user: {} at {}", sub, LocalDateTime.now());
+        authServiceInfoOP.save(
+                BaseLog.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId(sub)
+                        .eventType("Refresh Token")
+                        .details(Map.of(
+                                "Service", "AuthService",
+                                "Method", "refreshToken"
+                        ))
+                        .build()
+        );
 
         return JwtDTO.builder()
                 .accessToken(newAccessToken)
@@ -213,7 +246,20 @@ public class AuthService implements AuthUC {
     @Override
     public void logout(String refreshToken) {
         String tokenId = jwtProvider.getClaimFromToken(refreshToken, "token_id");
+        String sub = jwtProvider.getClaimFromToken(refreshToken, "sub");
         refreshTokenService.revokeRefreshToken(tokenId);
+
+        authServiceInfoOP.save(
+                BaseLog.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId(sub)
+                        .eventType("Session closed")
+                        .details(Map.of(
+                                "Service", "AuthService",
+                                "Method", "logout"
+                        ))
+                        .build()
+        );
     }
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
@@ -221,4 +267,6 @@ public class AuthService implements AuthUC {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final AuthOP outputPort;
+
+    private final AuthServiceInfoOP authServiceInfoOP;
 }

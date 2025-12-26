@@ -43,12 +43,19 @@ spring:
     protocol: ${KOJSTAR_TERMINAL_EMAIL_PROTOCOL}
     username: ${KOJSTAR_TERMINAL_EMAIL_USERNAME}
     password: ${KOJSTAR_TERMINAL_EMAIL_PASSWORD}
+    sender:
+      system: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM}
+      administrator: ${KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR}
+      support: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT}
+      notification: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION}
+      news: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+    encoding: UTF-8
   security:
     oauth2:
       resourceserver:
@@ -63,14 +70,26 @@ spring:
   task:
     scheduling:
       enabled: true
-  vault:
-    scheme: http
-    host: 127.0.0.1
-    port: 8200
-    authentication: approle
-    app-role:
-      role-id: 08b83bd5-c1c5-f633-ece6-ce1df41a0452
-      secret-id: f3910b6b-e988-2b10-cab2-0929f9b6fc48
+  cloud:
+    vault:
+      scheme: http
+      host: 127.0.0.1
+      port: 8200
+      authentication: APPROLE
+      app-role:
+        role-id: ${KOJSTAR_TERMINAL_VAULT_ROLE_ID}
+        secret-id: ${KOJSTAR_TERMINAL_VAULT_SECRET_ID}
+        app-role-path: approle
+      connection-timeout: 15000
+      fail-fast: true
+  data:
+    mongodb:
+      host: ${KOJSTAR_TERMINAL_MONGODB_HOST}
+      port: ${KOJSTAR_TERMINAL_MONGODB_PORT}
+      database: ${KOJSTAR_TERMINAL_MONGODB_DATABASE}
+      username: ${KOJSTAR_TERMINAL_MONGODB_USERNAME}
+      password: ${KOJSTAR_TERMINAL_MONGODB_PASSWORD}
+      authentication-database: ${KOJSTAR_TERMINAL_MONGODB_AUTH_DB}
 
 vault:
   transit:

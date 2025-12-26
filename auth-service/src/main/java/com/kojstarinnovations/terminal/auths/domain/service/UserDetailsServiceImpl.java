@@ -43,8 +43,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(I18nAuthConstants.EXCEPTION_USER_NOT_FOUND);
         }
 
-        log.info("UserDTO: {}", opUser.get().getPassword());
-
         UserDTO dto = persistenceMapper.entityToDtoWithAccessAndRoles(opUser.get());
 
         //log.info("UserResp: {}", userResponse);

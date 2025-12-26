@@ -17,7 +17,7 @@ public class ForgotPasswordResponse {
     private String userId;
     private String token;
     private String code;
-    private LocalDateTime creationDate;
+    private LocalDateTime issueDate;
     private LocalDateTime expirationDate;
     private Boolean used;
     private String clientUrl;

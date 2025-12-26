@@ -1,14 +1,10 @@
 package com.kojstarinnovations.terminal.commons.data.transport.commons;
 
 import com.kojstarinnovations.terminal.commons.data.constants.ValidationConstants;
-import com.kojstarinnovations.terminal.commons.data.enums.ContactType;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.RegionCodeISO;
 import com.kojstarinnovations.terminal.commons.validation.DataRequired;
 import com.kojstarinnovations.terminal.commons.validation.SQLInjectionMalicious;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -16,8 +12,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class ContactRequest extends CommonsRequest {
+public class ContactRequest {
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.CONTACT_TYPE_REQUIRED)

@@ -45,7 +45,12 @@ spring:
     protocol: ${KOJSTAR_TERMINAL_EMAIL_PROTOCOL}
     username: ${KOJSTAR_TERMINAL_EMAIL_USERNAME}
     password: ${KOJSTAR_TERMINAL_EMAIL_PASSWORD}
-    sender: ${KOJSTAR_TERMINAL_EMAIL_SENDER}
+    sender:
+      system: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SYSTEM}
+      administrator: ${KOJSTAR_TERMINAL_EMAIL_SENDER_ADMINISTRATOR}
+      support: ${KOJSTAR_TERMINAL_EMAIL_SENDER_SUPPORT}
+      notification: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NOTIFICATION}
+      news: ${KOJSTAR_TERMINAL_EMAIL_SENDER_NEWS}
     properties:
       mail:
         smtp:
@@ -73,6 +78,14 @@ spring:
         app-role-path: approle
       connection-timeout: 15000
       fail-fast: true
+  data:
+    mongodb:
+      host: ${KOJSTAR_TERMINAL_MONGODB_HOST}
+      port: ${KOJSTAR_TERMINAL_MONGODB_PORT}
+      database: ${KOJSTAR_TERMINAL_MONGODB_DATABASE}
+      username: ${KOJSTAR_TERMINAL_MONGODB_USERNAME}
+      password: ${KOJSTAR_TERMINAL_MONGODB_PASSWORD}
+      authentication-database: ${KOJSTAR_TERMINAL_MONGODB_AUTH_DB}
 
 vault:
   transit:

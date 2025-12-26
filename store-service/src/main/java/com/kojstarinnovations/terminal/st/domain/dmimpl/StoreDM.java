@@ -3,7 +3,7 @@ package com.kojstarinnovations.terminal.st.domain.dmimpl;
 import com.kojstarinnovations.terminal.commons.data.payload.storeservice.StoreResponse;
 import com.kojstarinnovations.terminal.commons.dm.DomainMapper;
 import com.kojstarinnovations.terminal.shared.mapper.ModelMapperCustomized;
-import com.kojstarinnovations.terminal.st.application.data.request.StoreRequest;
+import com.kojstarinnovations.terminal.commons.data.transport.storeservice.StoreRequest;
 import com.kojstarinnovations.terminal.st.domain.model.StoreDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

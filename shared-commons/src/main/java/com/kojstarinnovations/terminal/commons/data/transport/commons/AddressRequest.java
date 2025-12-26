@@ -1,14 +1,10 @@
 package com.kojstarinnovations.terminal.commons.data.transport.commons;
 
 import com.kojstarinnovations.terminal.commons.data.constants.ValidationConstants;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.CountryCodeISO;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.RegionCodeISO;
-import com.kojstarinnovations.terminal.commons.data.enums.iso.SubdivisionRegionCodeISO;
 import com.kojstarinnovations.terminal.commons.validation.DataRequired;
 import com.kojstarinnovations.terminal.commons.validation.SQLInjectionMalicious;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -21,8 +17,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class AddressRequest extends CommonsRequest {
+public class AddressRequest {
 
     @SQLInjectionMalicious(message = ValidationConstants.SQL_INJECTION_MALICIOUS)
     @DataRequired(message = ValidationConstants.ADDRESS_REQUIRED)

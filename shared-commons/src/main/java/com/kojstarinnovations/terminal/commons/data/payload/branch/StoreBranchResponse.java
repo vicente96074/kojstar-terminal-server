@@ -1,6 +1,7 @@
 package com.kojstarinnovations.terminal.commons.data.payload.branch;
 
 import com.kojstarinnovations.terminal.commons.data.payload.commons.AuditAttributeResponse;
+import com.kojstarinnovations.terminal.commons.data.payload.storeservice.FiscalDirectionResponse;
 import com.kojstarinnovations.terminal.commons.data.payload.storeservice.StoreResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;

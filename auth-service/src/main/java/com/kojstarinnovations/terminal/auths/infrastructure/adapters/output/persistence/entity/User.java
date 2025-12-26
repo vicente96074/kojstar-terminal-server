@@ -32,7 +32,6 @@ public class User {
     private String firstName;
 
     @Column(name = "first_surname")
-    @Convert(converter = EncryptionConverter.class)
     private String firstSurname;
 
     @Column(unique = true, nullable = false)
@@ -43,9 +42,6 @@ public class User {
 
     @Column(nullable = false)
     private String password;
-
-    @Column(name = "store_branch_id")
-    private String storeBranchId;
 
     @Column(name = "store_id")
     private String storeId;

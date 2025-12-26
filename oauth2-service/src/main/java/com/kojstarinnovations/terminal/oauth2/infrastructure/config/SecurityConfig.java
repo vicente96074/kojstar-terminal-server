@@ -101,6 +101,7 @@ public class SecurityConfig {
                             JsonNode stateJson = new ObjectMapper().readTree(decodedState);
 
                             String frontendUrl = stateJson.path("frontendUrl").asText(null);
+                            String storeId = stateJson.path("storeId").asText(null);
                             //log.info("frontendUrl: {}", frontendUrl);
 
                             OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
@@ -114,7 +115,7 @@ public class SecurityConfig {
                                 email = (String) attributes.get("email"); // Para otros proveedores
                             }
 
-                            interceptOauth2UserService.intercept(stateJson, email, provider, attributes);
+                            interceptOauth2UserService.intercept(stateJson, email, provider, storeId, attributes);
 
                             String accessToken = tokenService.generateAccessToken(authentication, email);
                             String refreshToken = tokenService.generateRefreshToken(authentication, email);

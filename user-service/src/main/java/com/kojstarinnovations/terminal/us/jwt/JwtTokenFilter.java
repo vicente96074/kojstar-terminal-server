@@ -1,21 +1,27 @@
 package com.kojstarinnovations.terminal.us.jwt;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kojstarinnovations.terminal.commons.data.enums.AuthenticationMethod;
+import com.kojstarinnovations.terminal.commons.data.enums.ExceptionType;
 import com.kojstarinnovations.terminal.commons.data.enums.Methods;
 import com.kojstarinnovations.terminal.us.infrastructure.adapters.config.TokenInspector;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,45 +44,70 @@ public class JwtTokenFilter extends OncePerRequestFilter {
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+            throws IOException {
 
-        String accessToken = jwtTokenProvider.resolveToken(request);
+        try {
 
-        log.info("Access token: {}", accessToken);
+            String accessToken = jwtTokenProvider.resolveToken(request);
 
-        //log.info("Resolving token: {}", token);
+            log.info("Access token: {}", accessToken);
 
-        Map<String, Object> claims = TokenInspector.extractClaimsWithoutValidation(accessToken);
+            //log.info("Resolving token: {}", token);
 
-        String authMethod = (String) claims.get(Methods.AUTHENTICATION_METHOD.name().toLowerCase());
+            Map<String, Object> claims = TokenInspector.extractClaimsWithoutValidation(accessToken);
 
-        log.info("Auth method: {}", authMethod);
+            String authMethod = (String) claims.get(Methods.AUTHENTICATION_METHOD.name().toLowerCase());
 
-        boolean isOauth2 = authMethod.equals(AuthenticationMethod.OAuth2.name().toLowerCase());
+            log.info("Auth method: {}", authMethod);
 
-        //log.info("isOauth2: {}", isOauth2);
+            boolean isOauth2 = authMethod.equals(AuthenticationMethod.OAuth2.name().toLowerCase());
 
-        if (isOauth2 && accessToken != null && oAuth2JwtService.validateToken(accessToken)) {
-            log.info("OAuth2 JWT is valid");
-            Authentication auth = oAuth2JwtService.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            //log.info("isOauth2: {}", isOauth2);
+
+            if (isOauth2 && accessToken != null && oAuth2JwtService.validateToken(accessToken)) {
+                log.info("OAuth2 JWT is valid");
+                Authentication auth = oAuth2JwtService.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+
+            if (!isOauth2 && accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+                log.info("JWT is valid");
+                Authentication auth = jwtTokenProvider.getAuthentication(accessToken);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            }
+
+            filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+            handleException(response, HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
-
-        if (!isOauth2 && accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-            log.info("JWT is valid");
-            Authentication auth = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-        }
-
-        filterChain.doFilter(request, response);
     }
 
-    // May not protected AUTH_WHITELIST
+    private void handleException(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+//        ExceptionResponse payload = ExceptionResponse
+//                .builder()
+//                .date(LocalDateTime.now())
+//                .type(ExceptionType.CRITICAL_SECURITY)
+//                .details(message)
+//                .build();
+
+        Map<String, Object> errorDetails = new HashMap<>();
+        errorDetails.put("date", LocalDateTime.now().toString());
+        errorDetails.put("type", ExceptionType.CRITICAL_SECURITY);
+        errorDetails.put("details", message);
+
+        response.getWriter().write(new ObjectMapper().writeValueAsString(errorDetails));
+    }
+
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+
         for (String authPath : AUTH_WHITELIST) {
-            if (path.startsWith(authPath)) {
+            if (pathMatcher.match(authPath, path)) {
                 return true;
             }
         }

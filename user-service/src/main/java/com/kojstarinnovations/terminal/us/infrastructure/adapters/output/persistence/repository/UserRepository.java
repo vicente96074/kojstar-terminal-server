@@ -44,16 +44,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     Page<User> getFindByStatus(@Param("status") Status status, Pageable pageable);
 
     /**
-     * Update user setting id
-     *
-     * @param id            the id of the user
-     * @param userSettingId the setting id
-     */
-    @Modifying
-    @Query("UPDATE users u SET u.userSettingId = :userSettingId WHERE u.id = :id")
-    void updateUserSettingId(@Param("id") String id, @Param("userSettingId") String userSettingId);
-
-    /**
      * Update user status
      *
      * @param id     the id of the user

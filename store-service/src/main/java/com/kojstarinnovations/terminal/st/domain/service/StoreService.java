@@ -1,13 +1,13 @@
 package com.kojstarinnovations.terminal.st.domain.service;
 
 import com.kojstarinnovations.terminal.commons.data.constants.I18nStoreConstants;
-import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
 import com.kojstarinnovations.terminal.commons.data.payload.storeservice.StoreResponse;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
-import com.kojstarinnovations.terminal.commons.exception.UnauthorizedException;
-import com.kojstarinnovations.terminal.st.application.data.request.StoreRequest;
+import com.kojstarinnovations.terminal.commons.data.transport.storeservice.StoreRequest;
 import com.kojstarinnovations.terminal.st.domain.dmimpl.StoreDM;
 import com.kojstarinnovations.terminal.st.domain.model.StoreDTO;
+import com.kojstarinnovations.terminal.st.domain.model.StoreServiceLogDTO;
+import com.kojstarinnovations.terminal.st.domain.opextends.StoreServiceLogOP;
 import com.kojstarinnovations.terminal.st.domain.opextends.StoreOP;
 import com.kojstarinnovations.terminal.st.domain.ucextends.StoreUC;
 import jakarta.transaction.Transactional;
@@ -17,7 +17,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -34,11 +36,19 @@ public class StoreService implements StoreUC {
     @Override
     public StoreResponse save(StoreRequest request) {
         StoreDTO dto = mapper.requestToDTO(request);
-        dto.setId(null);
         dto = (StoreDTO) auditAttributeService.getAuditAttributesForNew(dto);
 
         StoreResponse payload = outputPort.save(dto);
-        log.info("Store created successfully with id={} by user with id {}", payload.getId(), userDetailsService.getUserFromAuth().getSub());
+
+        storeServiceLogOP.create(
+                StoreServiceLogDTO.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId(userDetailsService.getUserFromAuth().getSub())
+                        .eventType("Create Store")
+                        .details(Map.of("ID", payload.getId()))
+                        .build()
+        );
+
         return payload;
     }
 
@@ -122,21 +132,9 @@ public class StoreService implements StoreUC {
         return payload;
     }
 
-    @Override
-    public StoreResponse execute(StoreRequest request) {
-        StoreDTO dto = mapper.requestToDTO(request);
-        dto.setId(null);
-        dto = (StoreDTO) auditAttributeService.getAuditAttributesForSystem(dto);
-
-        StoreResponse payload = outputPort.save(dto);
-        log.info("Store created successfully by system");
-
-        return payload;
-        //throw new UnauthorizedException(I18nUserConstants.EXCEPTION_TI_INVALID_TOKEN_FORMAT);
-    }
-
     private final StoreOP outputPort;
     private final StoreDM mapper;
+    private final StoreServiceLogOP storeServiceLogOP;
     private final AuditAttributeService auditAttributeService;
     private final UserDetailsServiceImpl userDetailsService;
 }

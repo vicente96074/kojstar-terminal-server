@@ -1,18 +1,22 @@
 package com.kojstarinnovations.terminal.auths.domain.service;
 
+import com.kojstarinnovations.terminal.auths.domain.opextends.AuthServiceInfoOP;
 import com.kojstarinnovations.terminal.auths.domain.opextends.ForgotPasswordOP;
 import com.kojstarinnovations.terminal.auths.domain.ucextends.AuthUC;
 import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.ForgotPasswordDTO;
 import com.kojstarinnovations.terminal.commons.data.helper.CodeHelper;
 import com.kojstarinnovations.terminal.commons.data.helper.TokenHelper;
+import com.kojstarinnovations.terminal.commons.data.log.BaseLog;
 import com.kojstarinnovations.terminal.commons.data.payload.commons.TokenJson;
 import com.kojstarinnovations.terminal.commons.data.payload.userservice.UserResponse;
+import com.kojstarinnovations.terminal.commons.data.transport.mail.EmailRequest;
 import com.kojstarinnovations.terminal.commons.data.transport.mail.ForgotPasswordRequest;
 import com.kojstarinnovations.terminal.commons.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +60,7 @@ public class AuthEmailService {
         }
         variables.put("codeChars", codeChars); // PASSING CODE AS SIMPLE STRING
 
-        String template = "user-forgot-password";
+        String template = "forgot-password";
         String mailTo = request.getEmail();
 
         Map<String, Object> lines = new HashMap<>();
@@ -70,21 +74,44 @@ public class AuthEmailService {
                 .email(user.getEmail())
                 .token(token)
                 .code(code)
-                .creationDate(now)
+                .issueDate(now)
                 .expirationDate(now.plusMinutes(30))
                 .used(false)
                 .build();
 
         // Use 'en' as default, which is consistent with the 'en' property file suffix
         Locale locale = Locale.forLanguageTag(request.getLanguageTag() != null ? request.getLanguageTag() : "en");
-        String subjectKey = messageSource.getMessage("email.reset.subject", null, locale);
+        String subjectKey = messageSource.getMessage("fpw.subject", null, locale);
 
         forgotPasswordOP.save(dto);
 
         // Pass the subject KEY and the Locale
-        emailService.sendEmail(variables, template, mailTo, subjectKey, lines, locale);
+        emailService.sendEmail(
+                EmailRequest.builder()
+                        .variables(variables)
+                        .template(template)
+                        .mailTo(mailTo)
+                        .subject(subjectKey)
+                        .inlineResources(lines)
+                        .locale(locale)
+                        .sender(supportSender)
+                        .build()
+        );
 
-        log.info("Forgot password email sent to: {}", request.getEmail());
+        authServiceInfoOP.save(
+                BaseLog.builder()
+                        .timestamp(LocalDateTime.now())
+                        .userId("system")
+                        .eventType("Reset Password")
+                        .details(Map.of(
+                                "Service", "AuthEmailService",
+                                "Method", "sendEmailForgotPassword",
+                                "Sender", supportSender,
+                                "Receiver", mailTo
+                        ))
+                        .build()
+        );
+
         return TokenJson.of(token);
     }
 
@@ -93,4 +120,9 @@ public class AuthEmailService {
     private final AuthUC authService;
     private final ForgotPasswordOP forgotPasswordOP;
     private final ValidatorRequestsService validatorRequestsService;
+
+    @Value("${spring.mail.sender.support}")
+    private String supportSender;
+
+    private final AuthServiceInfoOP authServiceInfoOP;
 }

@@ -1,22 +1,22 @@
 package com.kojstarinnovations.terminal.oauth2.infrastructure.output.entity;
 
+import com.kojstarinnovations.terminal.commons.data.enums.PrefixCodesISO;
 import com.kojstarinnovations.terminal.commons.data.enums.Status;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.shared.coverters.enums.StatusConverter;
+import com.kojstarinnovations.terminal.shared.entity.BasicAudit;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "google_users")
-public class GoogleUser {
+public class GoogleUser extends BasicAudit {
 
     @Id
     @Column(name = "id", length = 15)
@@ -58,6 +58,8 @@ public class GoogleUser {
 
     @PrePersist
     private void prePersist() {
-        this.id = UUIDHelper.generateUUID("GOOGLE", 15);
+        if (this.id == null || this.id.isEmpty()) {
+            this.id = UUIDHelper.generateUUID(PrefixCodesISO.STORE_ID.getCode() + PrefixCodesISO.GOOGLE_USER, 10);
+        }
     }
 }

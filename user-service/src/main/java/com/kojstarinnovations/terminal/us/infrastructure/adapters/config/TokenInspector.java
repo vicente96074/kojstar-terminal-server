@@ -2,6 +2,7 @@ package com.kojstarinnovations.terminal.us.infrastructure.adapters.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kojstarinnovations.terminal.commons.data.constants.I18nUserConstants;
+import com.kojstarinnovations.terminal.commons.exception.UnauthorizedException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Base64;
@@ -33,7 +34,7 @@ public class TokenInspector {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(payload, Map.class);
         } catch (Exception e) {
-            throw new IllegalArgumentException(I18nUserConstants.EXCEPTION_TI_INVALID_TOKEN_FORMAT);
+            throw new UnauthorizedException(I18nUserConstants.EXCEPTION_TI_INVALID_TOKEN_FORMAT);
         }
     }
 }
