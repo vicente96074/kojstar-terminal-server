@@ -33,6 +33,7 @@
         <module>auth-service</module>
         <module>oauth2-service</module>
         <module>store-service</module>
+        <module>payment-service</module>
     </modules>
 
     <!-- Properties -->

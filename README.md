@@ -7,6 +7,20 @@ sudo apt-get install openjdk-17-jdk -y
 java -version
 ```
 
+# Ports used by kojstar-terminal services
+- 8080: User Service
+- 8081: Storage Service
+- 8082: Payment Service
+- 8090: Store Service
+
+
+- 9000: Oauth2 Service
+- 9001: Auth Service
+
+- 3306: MySQL Server
+- 27017: MongoDB Server
+- 6379: Redis Server
+
 # Set systemd variables and services
 
 - Open your terminal.
@@ -18,7 +32,6 @@ sudo mkdir -p /etc/kojstar-terminal
 
 # Create the environment variables file
 sudo nano /etc/kojstar-terminal/kt.env
-
 ```
 
 - Add the following content to kt.env:
@@ -503,11 +516,14 @@ sudo systemctl status mysql
 ```
 - Create Mysql Database
 ```bash
-DROP DATABASE IF EXISTS kt_store;
-CREATE DATABASE IF NOT EXISTS kt_store;
-
 DROP DATABASE IF EXISTS kt_auth;
 CREATE DATABASE IF NOT EXISTS kt_auth;
+
+DROP DATABASE IF EXISTS kt_payment;
+CREATE DATABASE IF NOT EXISTS kt_payment;
+
+DROP DATABASE IF EXISTS kt_store;
+CREATE DATABASE IF NOT EXISTS kt_store;
 
 DROP DATABASE IF EXISTS kt_test;
 CREATE DATABASE IF NOT EXISTS kt_test;
