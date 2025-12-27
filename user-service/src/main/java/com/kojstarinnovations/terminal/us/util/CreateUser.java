@@ -38,9 +38,11 @@ public class CreateUser {
         try {
             userService.createOwnResources(getUserRequest());
         } catch (Exception e) {
-            e.printStackTrace();
-            log.info("Error creating user: {}", e.getMessage());
+            //e.printStackTrace();
+            //log.info("Error creating user: {}", e.getMessage());
         }
+
+        log.info("Created user");
     }
 
     /**

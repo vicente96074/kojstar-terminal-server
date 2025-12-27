@@ -3,7 +3,7 @@ package com.kojstarinnovations.terminal.auths.domain.service;
 import com.kojstarinnovations.terminal.auths.domain.opextends.AuthOP;
 import com.kojstarinnovations.terminal.auths.domain.opextends.AuthServiceInfoOP;
 import com.kojstarinnovations.terminal.auths.domain.ucextends.AuthUC;
-import com.kojstarinnovations.terminal.auths.jwt.JwtProvider;
+import com.kojstarinnovations.terminal.auths.jwt.JwtService;
 import com.kojstarinnovations.terminal.commons.data.constants.I18nAuthConstants;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.JwtDTO;
 import com.kojstarinnovations.terminal.commons.data.dto.authservice.RefreshTokenData;
@@ -77,12 +77,12 @@ public class AuthService implements AuthUC {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        LocalDateTime createdAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        Instant instant = Instant.now();
 
-        String accessToken = jwtProvider.generateAccessToken(authentication);
-        String refreshToken = jwtProvider.generateRefreshToken(authentication, createdAt);
-        String tokenId = jwtProvider.getClaimFromToken(refreshToken, "token_id");
-        String sub = jwtProvider.getClaimFromToken(refreshToken, "sub");
+        String accessToken = jwtService.generateAccessToken(authentication);
+        String refreshToken = jwtService.generateRefreshToken(authentication, instant);
+        String tokenId = jwtService.getClaimFromToken(refreshToken, "token_id");
+        String sub = jwtService.getClaimFromToken(refreshToken, "sub");
         Instant now = Instant.now();
 
         this.refreshTokenService.storeRefreshToken(RefreshTokenData.builder()
@@ -115,11 +115,11 @@ public class AuthService implements AuthUC {
     @Override
     public JwtDTO refreshTokenWithout2fA(RefreshTokenRequest request, String deviceUserAgent, String deviceIp) {
         //TODO: Validate token before refreshing if expired, correctly signed, etc.
-        if (!jwtProvider.validRefreshToken(request.refreshToken())) {
+        if (jwtService.refreshTokenNotValid(request.refreshToken())) {
             throw new CriticalSecurityException(I18nAuthConstants.EXCEPTION_REFRESH_TOKEN_INVALID_OR_EXPIRED);
         }
 
-        String sub = jwtProvider.getClaimFromToken(request.refreshToken(), "sub");
+        String sub = jwtService.getClaimFromToken(request.refreshToken(), "sub");
 
         // Check if the IP or user agent is blacklisted for the user
         List<String> suspiciousIps = this.refreshTokenService.getSuspiciousIpsBySub(sub);
@@ -140,7 +140,7 @@ public class AuthService implements AuthUC {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, null, principalUser.getAuthorities());
 
-        String newAccessToken = jwtProvider.generateAccessToken(authentication);
+        String newAccessToken = jwtService.generateAccessToken(authentication);
 
         authServiceInfoOP.save(
                 BaseLog.builder()
@@ -163,12 +163,12 @@ public class AuthService implements AuthUC {
     @Override
     public JwtDTO refreshToken(RefreshTokenRequest request, String deviceUserAgent, String deviceIp) {
         //TODO: Validate token before refreshing if expired, correctly signed, etc.
-        if (!jwtProvider.validRefreshToken(request.refreshToken())) {
+        if (jwtService.refreshTokenNotValid(request.refreshToken())) {
             throw new CriticalSecurityException(I18nAuthConstants.EXCEPTION_REFRESH_TOKEN_INVALID_OR_EXPIRED);
         }
 
-        String sub = jwtProvider.getClaimFromToken(request.refreshToken(), "sub");
-        String tokenId = this.jwtProvider.getClaimFromToken(request.refreshToken(), "token_id");
+        String sub = jwtService.getClaimFromToken(request.refreshToken(), "sub");
+        String tokenId = this.jwtService.getClaimFromToken(request.refreshToken(), "token_id");
         RefreshTokenData tokenData = this.refreshTokenService.getRefreshToken(tokenId);
 
         // Check if the IP or user agent is blacklisted for the user
@@ -223,7 +223,7 @@ public class AuthService implements AuthUC {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(principalUser, null, principalUser.getAuthorities());
 
-        String newAccessToken = jwtProvider.generateAccessToken(authentication);
+        String newAccessToken = jwtService.generateAccessToken(authentication);
 
         authServiceInfoOP.save(
                 BaseLog.builder()
@@ -245,8 +245,8 @@ public class AuthService implements AuthUC {
 
     @Override
     public void logout(String refreshToken) {
-        String tokenId = jwtProvider.getClaimFromToken(refreshToken, "token_id");
-        String sub = jwtProvider.getClaimFromToken(refreshToken, "sub");
+        String tokenId = jwtService.getClaimFromToken(refreshToken, "token_id");
+        String sub = jwtService.getClaimFromToken(refreshToken, "sub");
         refreshTokenService.revokeRefreshToken(tokenId);
 
         authServiceInfoOP.save(
@@ -265,7 +265,7 @@ public class AuthService implements AuthUC {
     private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final RefreshTokenService refreshTokenService;
     private final AuthenticationManager authenticationManager;
-    private final JwtProvider jwtProvider;
+    private final JwtService jwtService;
     private final AuthOP outputPort;
 
     private final AuthServiceInfoOP authServiceInfoOP;

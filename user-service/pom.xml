@@ -254,7 +254,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.kojstarinnovations.terminal.us.App</mainClass>
+                    <mainClass>com.kojstarinnovations.terminal.us.UserServiceApp</mainClass>
                     <finalName>user-service</finalName>
                 </configuration>
             </plugin>

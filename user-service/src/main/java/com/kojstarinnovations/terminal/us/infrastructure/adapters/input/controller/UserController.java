@@ -71,7 +71,12 @@ public class UserController {
     @GetMapping(value = "/get-by-authentication", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("@securityService.hasAnyRole('SUPER_ADMIN', 'CEO', 'REGIONAL_MANAGER', 'GOOGLE_USER', 'GITHUB_USER')")
     public ResponseEntity<UserAuthenticated> getByAuthentication() {
-        log.info("Getting user by authentication");
+        return new ResponseEntity<>(service.getByAuthentication(), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/test-auth", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("@securityService.hasAnyRole('SUPER_ADMIN', 'CEO', 'REGIONAL_MANAGER', 'GOOGLE_USER', 'GITHUB_USER')")
+    public ResponseEntity<UserAuthenticated> testAuth() {
         return new ResponseEntity<>(service.getByAuthentication(), HttpStatus.OK);
     }
 

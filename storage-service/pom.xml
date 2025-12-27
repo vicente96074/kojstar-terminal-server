@@ -169,7 +169,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.kojstarinnovations.terminal.storage.App</mainClass>
+                    <mainClass>com.kojstarinnovations.terminal.storage.StorageServiceApp</mainClass>
                     <finalName>storage-service</finalName>
                 </configuration>
             </plugin>

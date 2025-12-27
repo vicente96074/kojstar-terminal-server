@@ -1,12 +1,6 @@
 # Server configuration (Dynamic port number)
 server:
-  ssl:
-    enabled: false
-    key-alias: ${KOJSTAR_TERMINAL_SSL_KEY_ALIAS}
-    key-store: file:${KOJSTAR_TERMINAL_SSL_KEY_STORE}
-    key-store-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
-    key-store-type: PKCS12
-    key-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+  host-issuer: ${KOJSTAR_TERMINAL_AUTH_HOST_ISSUER}
   port: 9001
 
 # Spring application configuration
@@ -93,8 +87,11 @@ vault:
 
 # JWT secret and expiration
 jwt:
-  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
-  expiration: ${KOJSTAR_TERMINAL_JWT_EXPIRATION}
+  key:
+    keystore-location: file:${KOJSTAR_TERMINAL_JWT_KEY_STORE}
+    keystore-password: ${KOJSTAR_TERMINAL_JWT_KEY_PASSWORD}
+    key-alias: jwt-key
+    key-password: ${KOJSTAR_TERMINAL_JWT_KEY_PASSWORD}
 
 # Logging configuration
 logging:

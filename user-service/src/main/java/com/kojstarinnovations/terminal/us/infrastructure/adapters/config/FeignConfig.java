@@ -30,12 +30,10 @@ public class FeignConfig implements RequestInterceptor {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (attributes != null) {
             HttpServletRequest request = attributes.getRequest();
-            String token = request.getHeader("Authorization") != null ? request.getHeader("Authorization") : jwtTokenProvider.generateInternalToken();
+            String token = request.getHeader("Authorization"); // != null ? request.getHeader("Authorization") : jwtTokenProvider.generateInternalToken();
             if (token != null) {
                 requestTemplate.header("Authorization", token);
             }
         }
     }
-
-    private final JwtTokenProvider jwtTokenProvider;
 }

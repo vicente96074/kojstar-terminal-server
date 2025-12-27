@@ -168,4 +168,26 @@ public class RefreshTokenService {
         List<String> suspiciousUserAgents = redisTemplate.opsForList().range(suspiciousUserAgentKey, 0, -1);
         return suspiciousUserAgents != null ? suspiciousUserAgents : new ArrayList<>();
     }
+
+    public boolean isRefreshTokenValid(String tokenId, String token) {
+        try {
+            String key = PREFIX_REFRESH_TOKEN + tokenId;
+            String storedToken = redisTemplate.opsForValue().get(key);
+
+            // String to RefreshTokenData
+            RefreshTokenData refreshTokenData = objectMapper.readValue(storedToken, RefreshTokenData.class);
+
+            log.info("{}", storedToken);
+            if (storedToken == null) {
+                //log.warn("No refresh token found for tokenId: {}", tokenId);
+                return false;
+            }
+
+            //log.info("Refresh token valid: {}", isRefreshValid);
+            return token.equals(refreshTokenData.getRefreshToken());
+        } catch (Exception e) {
+            //log.error("Error parsing stored refresh token data: {}", e.getMessage());
+            return false;
+        }
+    }
 }

@@ -1,12 +1,6 @@
 # Server configuration (Dinamyc port number)
 server:
-  ssl:
-    enabled: false
-    key-alias: ${KOJSTAR_TERMINAL_SSL_KEY_ALIAS}
-    key-store: file:${KOJSTAR_TERMINAL_SSL_KEY_STORE}
-    key-store-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
-    key-store-type: PKCS12
-    key-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+  host-issuer: ${KOJSTAR_TERMINAL_AUTH_HOST_ISSUER}
   port: 8081
 
 # Spring application configuration
@@ -49,12 +43,16 @@ spring:
           jwk-set-uri: ${KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER}/oauth2/jwks
   data:
     mongodb:
-      uri: ${KOJSTAR_TERMINAL_URI_MONGODB_LOGS}
+      host: ${KOJSTAR_TERMINAL_MONGODB_HOST}
+      port: ${KOJSTAR_TERMINAL_MONGODB_PORT}
+      database: ${KOJSTAR_TERMINAL_MONGODB_DATABASE}
+      username: ${KOJSTAR_TERMINAL_MONGODB_USERNAME}
+      password: ${KOJSTAR_TERMINAL_MONGODB_PASSWORD}
+      authentication-database: ${KOJSTAR_TERMINAL_MONGODB_AUTH_DB}
 
 # JWT secret and expiration
 jwt:
-  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
-  expiration: ${KOJSTAR_TERMINAL_JWT_EXPIRATION}
+  public-key-location: file:${KOJSTAR_TERMINAL_JWT_PUBLIC_KEY_LOCATION}
 
 # Media location on the server
 app:

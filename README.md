@@ -88,6 +88,8 @@ KOJSTAR_TERMINAL_SPRING_REDIS_PORT="6379"
 KOJSTAR_TERMINAL_SPRING_REDIS_PASSWORD="redis-password"
 
 KOJSTAR_TERMINAL_OAUTH2_HOST_ISSUER="http://localhost:9000" # https://your-domain.com:9000
+KOJSTAR_TERMINAL_AUTH_HOST_ISSUER="http://localhost:9001" # https://your-domain.com:9001
+KOJSTAR_TERMINAL_JWT_PUBLIC_KEY_LOCATION="/path/to/your/public-key.pem"
 
 KOJSTAR_TERMINAL_CORS_ALLOWED_ORIGINS="http://localhost:4200,https://${IP_SERVER}:4200,https://your_domai.com,https://www.your_domain.com" # On production, use the your_domain.com
 KOJSTAR_TERMINAL_CORS_ALLOWED_METHODS="GET,POST,PUT,DELETE,OPTIONS" # Allowed methods
@@ -111,6 +113,7 @@ KOJSTAR_TERMINAL_JWT_KEY_STORE="/path/to/your/keystore.jks"
 KOJSTAR_TERMINAL_JWT_KEY_PASSWORD="jwt-key-password"
 KOJSTAR_TERMINAL_JWT_SECRET="secretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecretsecret"
 KOJSTAR_TERMINAL_JWT_EXPIRATION="43200"
+KOJSTAR_TERMINAL_JWT_PUBLIC_KEY_LOCATION="/path/to/your/public-key.pem"
 
 KOJSTAR_TERMINAL_MONGODB_HOST="${IP_SERVER}"
 KOJSTAR_TERMINAL_MONGODB_PORT="${MONGODB_PORT}"
@@ -180,6 +183,10 @@ sudo systemctl status kt-oauth2-service
 - Show real-time logs
 ```bash
 sudo journalctl -u kt-user-service -f
+```
+- Drop all logs (if necessary)
+```bash
+sudo journalctl --vacuum-time=1s
 ```
 
 # HASHICORP VAULT SETUP GUIDE
@@ -670,7 +677,11 @@ keytool -exportcert \
   -alias jwt-key \
   -keystore keystore.jks \
   -storepass your-password \
-  -file public-key.cer
+  -rfc \
+  -file public-key.pem
+
+# Alternatively, extract the public key using openssl (RECOMMENDED)
+keytool -list -rfc --alias jwt-key -keystore keystore.jks | openssl x509 -inform pem -pubkey -noout > public-key.pem
 
 # 3. View content (optional)
 keytool -list -v \
