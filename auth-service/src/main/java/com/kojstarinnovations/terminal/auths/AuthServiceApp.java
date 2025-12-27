@@ -11,8 +11,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @SpringBootApplication(scanBasePackages = "com.kojstarinnovations.terminal.auths")
 @EnableScheduling
-public class App {
+public class AuthServiceApp {
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(AuthServiceApp.class, args);
     }
 }

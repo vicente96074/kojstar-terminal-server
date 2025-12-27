@@ -98,8 +98,8 @@ public class StorageController {
     }
 
     @GetMapping("/get-assets-img")
-    public ResponseEntity<Resource> getAssetsImg(@RequestParam("filename") String filename) throws IOException {
-        Resource file = storageService.loadAssetsImg(filename);
+    public ResponseEntity<Resource> getAssetsImg(@RequestParam("code") String code) throws IOException {
+        Resource file = storageService.loadAssetsImg(code);
 
         String contentType = Files.probeContentType(file.getFile().toPath());
 

@@ -35,7 +35,7 @@ public class CreateRoles {
                                 .build()
                 );
             } catch (Exception ex) {
-                log.info("Error creating roles: {}", ex.getMessage());
+                //log.info("Error creating roles: {}", ex.getMessage());
             }
         });
 

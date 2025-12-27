@@ -49,29 +49,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         try {
 
             String accessToken = jwtTokenProvider.resolveToken(request);
-
-            log.info("Access token: {}", accessToken);
-
-            //log.info("Resolving token: {}", token);
-
             Map<String, Object> claims = TokenInspector.extractClaimsWithoutValidation(accessToken);
 
             String authMethod = (String) claims.get(Methods.AUTHENTICATION_METHOD.name().toLowerCase());
-
-            log.info("Auth method: {}", authMethod);
-
             boolean isOauth2 = authMethod.equals(AuthenticationMethod.OAuth2.name().toLowerCase());
 
-            //log.info("isOauth2: {}", isOauth2);
-
             if (isOauth2 && accessToken != null && oAuth2JwtService.validateToken(accessToken)) {
-                log.info("OAuth2 JWT is valid");
                 Authentication auth = oAuth2JwtService.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
 
             if (!isOauth2 && accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-                log.info("JWT is valid");
                 Authentication auth = jwtTokenProvider.getAuthentication(accessToken);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }

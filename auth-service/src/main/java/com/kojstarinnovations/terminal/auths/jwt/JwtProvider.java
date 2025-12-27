@@ -1,29 +1,23 @@
 package com.kojstarinnovations.terminal.auths.jwt;
 
+import com.kojstarinnovations.terminal.auths.domain.service.RefreshTokenService;
 import com.kojstarinnovations.terminal.commons.data.constants.SystemConstants;
 import com.kojstarinnovations.terminal.commons.data.enums.AuthenticationMethod;
 import com.kojstarinnovations.terminal.commons.data.enums.Methods;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.shared.security.dto.PrincipalUser;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 /**
  * JwtProvider - This class is used to generate, validate and get data from JWT tokens
@@ -35,46 +29,43 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class JwtProvider implements JwtService {
 
-    /**
-     * Generate refresh token
-     *
-     * @param authentication Authentication object with user data
-     * @return String token
-     */
-    public String generateRefreshToken(Authentication authentication, LocalDateTime createdAt) {
+    @Override
+    public String generateRefreshToken(Authentication authentication, Instant now) {
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
-        return Jwts.builder()
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer(hostIssuer)
+                .issuedAt(now)
+                .expiresAt(now.plus(30, ChronoUnit.DAYS)) // Refresh token más largo
+                .subject(principalUser.getSub())
                 .claim("token_id", UUIDHelper.generateUUID("rft", 15))
-                .claim("sub", principalUser.getSub())
-                .claim("createdAt", createdAt.toString())
-                .claim("issuer", SystemConstants.SYSTEM_NICK)
-                .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + (jwtExpiration * 60L * 1000L))) // Expire in 30 days (milliseconds)
-                .signWith(getSecret(secret)).compact();
+                .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
-    /**
-     * Generate access token
-     *
-     * @param authentication Authentication object with user data
-     * @return String token
-     */
     @Override
     public String generateAccessToken(Authentication authentication) {
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
-        List<String> roles = principalUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        List<String> accesses = principalUser.getAccesses().stream().map(GrantedAuthority::getAuthority).toList();
 
-        return Jwts.builder().setSubject(principalUser.getUsername())
+        Instant now = Instant.now();
+
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer(hostIssuer)
+                .issuedAt(now)
+                .expiresAt(now.plus(1, ChronoUnit.MINUTES)) // Expire in 15 minutes
+                .subject(principalUser.getSub())
                 .claim("sub", principalUser.getSub())
-                .claim("roles", roles)
-                .claim("accesses", accesses)
-                .claim("storeBranchId", principalUser.getStoreBranchId())
+                .claim("roles", principalUser.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority).toList())
+                .claim("accesses", principalUser.getAccesses().stream()
+                        .map(GrantedAuthority::getAuthority).toList())
                 .claim("storeId", principalUser.getStoreId())
+                .claim("storeBranchId", principalUser.getStoreBranchId() != null ? principalUser.getStoreBranchId() : "")
                 .claim("provider", SystemConstants.SYSTEM_NICK)
                 .claim(String.valueOf(Methods.AUTHENTICATION_METHOD).toLowerCase(), AuthenticationMethod.CUSTOM.name().toLowerCase())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + (60L * 1000L))) // Expire in 1 minutes
-                .signWith(getSecret(secret)).compact();
+                .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
     /**
@@ -84,65 +75,52 @@ public class JwtProvider implements JwtService {
      * @param claim String claim
      * @return String claim
      */
+    @Override
     public String getClaimFromToken(String token, String claim) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSecret(secret))
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get(claim, String.class);
+        Jwt jwt = jwtDecoder.decode(token);
+        return jwt.getClaimAsString(claim);
     }
 
-    /**
-     * Generate internal token
-     *
-     * @return String token
-     */
+    @Override
     public String generateInternalToken() {
-        return Jwts.builder().setSubject("internal")
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer(hostIssuer)
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plus(3, ChronoUnit.MINUTES)) // Expire in 3 minutes
+                .subject("internal")
                 .claim("settingId", "internal")
                 .claim("roles", List.of("INTERNAL"))
                 .claim("accesses", List.of("INTERNAL"))
                 .claim(String.valueOf(Methods.AUTHENTICATION_METHOD).toLowerCase(), AuthenticationMethod.INTERNAL.name().toLowerCase())
-                .setIssuedAt(new Date()).setExpiration(new Date(new Date().getTime() + 3 * 60L * 1000L)) // Expire in 3 minutes
-                .signWith(getSecret(secret)).compact();
+                .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
+    @Override
     @SneakyThrows
-    public boolean validRefreshToken(String refreshToken) {
+    public boolean refreshTokenNotValid(String refreshToken) {
         try {
-            Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(refreshToken);
+
+            String tokenId = getClaimFromToken(refreshToken, "token_id");
+            if (!this.refreshTokenService.isRefreshTokenValid(tokenId, refreshToken)) { // Verificar en Redis
+                return true;
+            }
+
+            Jwt jwt = jwtDecoder.decode(refreshToken);
+
+            Instant expiration = jwt.getExpiresAt();
+            return expiration == null || expiration.isBefore(Instant.now());
+        } catch (JwtException e) {
+            log.error("Invalid refresh token", e);
             return true;
-        } catch (MalformedJwtException ex) {
-            Logger.getLogger("Malformed JWT Token").log(Level.SEVERE, "Token mal formado {}", ex.getMessage());
-        } catch (UnsupportedJwtException ex) {
-            Logger.getLogger("Unsupported JWT Token").log(Level.SEVERE, "Token no soportado {}", ex.getMessage());
-        } catch (ExpiredJwtException ex) {
-            Logger.getLogger("Expired JWT Token").log(Level.SEVERE, "Token expirado {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger("JWT claims vacío").log(Level.SEVERE, "JWT claims vacío {}", ex.getMessage());
-        } catch (SignatureException ex) {
-            Logger.getLogger("JWT signature fail").log(Level.SEVERE, "JWT signature fallo {}", ex.getMessage());
         }
-
-        return false;
     }
 
-    /**
-     * Method to get secret
-     *
-     * @param secret String secret
-     * @return Key object
-     */
-    private Key getSecret(String secret) {
-        byte[] secretBytes = Decoders.BASE64URL.decode(secret);
-        return Keys.hmacShaKeyFor(secretBytes);
-    }
+    @Value("${server.host-issuer}")
+    private String hostIssuer;
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private int jwtExpiration;
+    private final JwtDecoder jwtDecoder;
+    private final JwtEncoder jwtEncoder;
+    private final RefreshTokenService refreshTokenService;
 }

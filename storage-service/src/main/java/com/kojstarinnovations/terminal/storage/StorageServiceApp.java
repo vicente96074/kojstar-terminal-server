@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @Author: Kojstar Innovations (Augusto Vicente)
  */
 @SpringBootApplication(scanBasePackages = "com.kojstarinnovations.terminal.storage")
-public class App {
+public class StorageServiceApp {
 
     /**
      * Main method for the storage service
@@ -17,6 +17,6 @@ public class App {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(StorageServiceApp.class, args);
     }
 }

@@ -1,5 +1,6 @@
 package com.kojstarinnovations.terminal.storage.domain.service;
 
+import com.kojstarinnovations.terminal.commons.data.constants.I18nCommonConstants;
 import com.kojstarinnovations.terminal.commons.data.constants.I18nStorageConstants;
 import com.kojstarinnovations.terminal.commons.data.helper.UUIDHelper;
 import com.kojstarinnovations.terminal.commons.data.log.BaseLog;
@@ -109,7 +110,7 @@ public class StorageService implements StorageUC {
         Logger.getLogger("StorageService").info("Saving store image");
 
         subDirectory = "/store";
-        return store(file,  host);
+        return store(file, host);
     }
 
     /**
@@ -123,7 +124,7 @@ public class StorageService implements StorageUC {
         Logger.getLogger("StorageService").info("Saving store branch image");
 
         subDirectory = "/store-branch";
-        return store(file,  host);
+        return store(file, host);
     }
 
     /**
@@ -139,7 +140,7 @@ public class StorageService implements StorageUC {
     /**
      * Store
      *
-     * @param file               MultipartFile
+     * @param file MultipartFile
      * @return StorageResponse
      * @throws IOException if the file is empty or cannot be stored
      */
@@ -177,7 +178,7 @@ public class StorageService implements StorageUC {
     /**
      * Get filename
      *
-     * @param file               MultipartFile
+     * @param file MultipartFile
      * @return String
      */
     private static String getFilename(MultipartFile file) {
@@ -224,7 +225,7 @@ public class StorageService implements StorageUC {
      * @param category the category
      * @return String
      */
-    String getSubDirectory(String category) {
+    private String getSubDirectory(String category) {
         return switch (category) {
             case "DPI", "NIT", "PASSPORT", "DRIVER_LICENSE", "SOCIAL_SECURITY" -> "identification";
             case "COMMODITY_CATEGORY" -> "commodity-category";
@@ -240,13 +241,13 @@ public class StorageService implements StorageUC {
     /**
      * Load as resource
      *
-     * @param filename name of the file
+     * @param code name of the file
      * @return Resource
      */
-    public Resource loadAssetsImg(String filename) {
+    public Resource loadAssetsImg(String code) {
         try {
             rootLocation = Paths.get(mediaLocation);
-            Path file = rootLocation.resolve("assets").resolve(filename);
+            Path file = rootLocation.resolve("assets").resolve(resolveFilename(code));
 
             Resource resource = new UrlResource(file.toUri());
 
@@ -265,11 +266,19 @@ public class StorageService implements StorageUC {
                 );
                 return resource;
             } else {
-                throw new NotFoundException("Could not read file: " + filename);
+                throw new NotFoundException("Could not read file: " + code);
             }
         } catch (Exception e) {
             throw new NotFoundException(I18nStorageConstants.EXCEPTION_ASSETS_NOT_FOUND);
         }
+    }
+
+    private String resolveFilename(String code) {
+        return switch (code) {
+            case "logo" -> "kojstar-logo.png";
+            case "default-profile" -> "default-profile.png";
+            default -> throw new NotFoundException(I18nCommonConstants.EXCEPTION_FILE_NOT_SUPPORTED);
+        };
     }
 
     /**

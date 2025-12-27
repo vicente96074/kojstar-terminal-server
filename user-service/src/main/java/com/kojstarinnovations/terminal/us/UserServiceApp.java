@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(scanBasePackages = "com.kojstarinnovations.terminal.us")
 @EnableScheduling
 @EnableFeignClients
-public class App {
+public class UserServiceApp {
 
     /**
      * Main method to start the application
@@ -21,6 +21,6 @@ public class App {
      * @param args - arguments
      */
     public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
+        SpringApplication.run(UserServiceApp.class, args);
     }
 }

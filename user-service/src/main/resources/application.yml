@@ -1,12 +1,6 @@
 # Server configuration (Dinamyc port number)
 server:
-  ssl:
-    enabled: false
-    key-alias: ${KOJSTAR_TERMINAL_SSL_KEY_ALIAS}
-    key-store: file:${KOJSTAR_TERMINAL_SSL_KEY_STORE}
-    key-store-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
-    key-store-type: PKCS12
-    key-password: ${KOJSTAR_TERMINAL_SSL_KEY_PASSWORD}
+  host-issuer: ${KOJSTAR_TERMINAL_AUTH_HOST_ISSUER}
   port: 8080
 
 # Spring application configuration
@@ -101,8 +95,7 @@ reencryption:
 
 # JWT secret and expiration
 jwt:
-  secret: ${KOJSTAR_TERMINAL_JWT_SECRET}
-  expiration: ${KOJSTAR_TERMINAL_JWT_EXPIRATION}
+  public-key-location: file:${KOJSTAR_TERMINAL_JWT_PUBLIC_KEY_LOCATION}
 
 # Logging configuration
 logging:
